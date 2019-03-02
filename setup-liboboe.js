@@ -25,6 +25,16 @@ function setupLiboboe (cb) {
   const version = fs.readFileSync(dir + 'VERSION', 'utf8').slice(0, -1)
 
   releaseInfo().then(info => {
+    if (info.platform !== 'linux') {
+      const line = `appoptics-bindings run on linux, the ${info.platform} platform is not yet supported`
+      const bar = '='.repeat(line.length)
+      console.log(bar)
+      console.log(bar)
+      console.log(line)
+      console.log(bar)
+      console.log(bar)
+      process.exit(1)
+    }
     return info.id === 'alpine' ? 'alpine' : 'linux'
   }).then(linux => {
     const liboboeName = oboeNames[linux]
