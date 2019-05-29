@@ -118,7 +118,7 @@ const defaultOptions = {
 }
 
 
-describe('addon.bindings', function () {
+describe('addon.oboeInit()', function () {
 
   it('should handle good options values', function () {
     const options = Object.assign({}, goodOptions, defaultOptions);
@@ -137,5 +137,9 @@ describe('addon.bindings', function () {
     const options = Object.assign({}, envOptions, defaultOptions)
     var result = bindings.oboeInit(options);
     expect(result).deep.equal(envOptions, 'initialization should succeeed');
+  })
+
+  it('should throw if not passed an object', function () {
+    expect(bindings.oboeInit).throw(TypeError, 'invalid calling signature');
   })
 })
