@@ -31,6 +31,56 @@ const keyMap = {
   REPORTER_FILE_SINGLE: {name: 'oneFilePerEvent', type: 'b'},           // file reporter
 }
 
+const goodOptions = {
+  serviceKey: 'a',
+  trustedPath: 'a',
+  hostnameAlias: 'a',
+  logLevel: 100,
+  reporter: 'a',
+  endpoint: 'a',
+  tokenBucketCapacity: 100,
+  tokenBucketRate: 100,
+  bufferSize: 100,
+  logFilePath: 'a',
+  traceMetrics: true,
+  histogramPrecision: 100,
+  maxTransactions: 100,
+  maxFlushWaitTime: 100,
+  eventsFlushInterval: 100,
+  eventsFlushBatchSize: 100,
+  oneFilePerEvent: 1
+}
+
+const goodBooleans = {
+  traceMetrics: true,
+  oneFilePerEvent: true
+}
+
+const badOptions = {
+  serviceKey: null,
+  trustedPath: null,
+  hostnameAlias: null,
+  logLevel: 'a',
+  reporter: null,
+  endpoint: null,
+  tokenBucketCapacity: 'a',
+  tokenBucketRate: 'a',
+  bufferSize: 'a',
+  logFilePath: 0,
+  traceMetrics: 0,
+  histogramPrecision: 'a',
+  maxTransactions: 'a',
+  maxFlushWaitTime: 'a',
+  eventsFlushInterval: 'a',
+  eventsFlushBatchSize: 'a',
+  oneFilePerEvent: undefined
+}
+
+const badBooleans = {
+  traceMetrics: false,
+  oneFilePerEvent: false
+}
+
 Object.keys(process.env).forEach(k => {
   if (!k.startsWith('APPOPTICS_')) {
     return;
@@ -70,7 +120,20 @@ const defaultOptions = {
 
 describe('addon.bindings', function () {
 
-  it('should initialize oboe with only a serviceKey', function () {
+  it('should handle good options values', function () {
+    const options = Object.assign({}, goodOptions, defaultOptions);
+    const expected = Object.assign({}, goodOptions, goodBooleans);
+    var result = bindings.oboeInit(options);
+    expect(result).deep.equal(expected);
+  })
+
+  it('should handle bad options values', function () {
+    const options = Object.assign({}, badOptions, defaultOptions);
+    var result = bindings.oboeInit(options);
+    expect(result).deep.equal(badBooleans);
+  })
+
+  it('should handle the environment variable values', function () {
     const options = Object.assign({}, envOptions, defaultOptions)
     var result = bindings.oboeInit(options);
     expect(result).deep.equal(envOptions, 'initialization should succeeed');
