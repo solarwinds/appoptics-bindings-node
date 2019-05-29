@@ -147,7 +147,7 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       Napi::Value traceMetrics = o.Get("traceMetrics");
       options.trace_metrics = traceMetrics.ToBoolean().Value();
       if (debug)
-        oo.Set("traceMetrics", traceMetrics);
+        oo.Set("traceMetrics", traceMetrics.ToBoolean().Value());
     }
     if (o.Has("histogramPrecision")) {
       Napi::Value histogramPrecision = o.Get("histogramPrecision");
@@ -178,7 +178,7 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       Napi::Value oneFilePerEvent = o.Get("oneFilePerEvent");
       options.file_single = oneFilePerEvent.ToBoolean().Value();
       if (debug)
-        oo.Set("oneFilePerEvent", oneFilePerEvent);;
+        oo.Set("oneFilePerEvent", oneFilePerEvent.ToBoolean().Value());;
     }
 
     if (debug) {
