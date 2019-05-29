@@ -14,7 +14,7 @@
 Napi::Value oboeInit(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
-    if (info.Length() < 1 || !info[0].IsObject()) {
+    if (info.Length() != 1 || !info[0].IsObject()) {
         Napi::TypeError::New(env, "invalid calling signature").ThrowAsJavaScriptException();
         return env.Null();
     }
