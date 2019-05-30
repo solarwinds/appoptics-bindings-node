@@ -4,6 +4,7 @@ var expect = require('chai').expect;
 const envOptions = {};
 const prefixLen = 'APPOPTICS_'.length;
 
+// portion of env var after 'APPOPTICS_': {bindings-name, type: [s]tring, [i]nteger, or [b]oolean}
 const keyMap = {
   // these have been documented for end-users; the names should not be changed
   SERVICE_KEY: {name: 'serviceKey', type: 's'},
@@ -32,16 +33,16 @@ const keyMap = {
 }
 
 const goodOptions = {
-  serviceKey: 'a',
-  trustedPath: 'a',
-  hostnameAlias: 'a',
+  serviceKey: 'magical-service-key',
+  trustedPath: 'secret-garden',
+  hostnameAlias: 'incognito',
   logLevel: 100,
-  reporter: 'a',
-  endpoint: 'a',
+  reporter: 'udp',
+  endpoint: 'localhost:port',
   tokenBucketCapacity: 100,
   tokenBucketRate: 100,
   bufferSize: 100,
-  logFilePath: 'a',
+  logFilePath: 'where-to-write',
   traceMetrics: true,
   histogramPrecision: 100,
   maxTransactions: 100,
@@ -100,7 +101,7 @@ function convert (string, type) {
     return string;
   }
   if (type === 'i') {
-    const v = +value;
+    const v = +string;
     return Number.isNaN(v) ? undefined : v;
   }
   if (type === 'b') {
@@ -141,5 +142,46 @@ describe('addon.oboeInit()', function () {
 
   it('should throw if not passed an object', function () {
     expect(bindings.oboeInit).throw(TypeError, 'invalid calling signature');
+  })
+
+  it('should init without losing memory', function (done) {
+    this.timeout(30000);
+    const warmup = 1000000;
+    const checkCount = 1000000;
+    const options = Object.assign({}, goodOptions, defaultOptions);
+
+    // garbage collect if available
+    const gc = typeof global.gc === 'function' ? global.gc : () => null;
+
+    // allow the system to come to a steady state. garbage collection makes it
+    // hard to isolate memory losses.
+    const start1 = process.memoryUsage().rss;
+    for (let i = warmup; i > 0; i--) {
+      bindings.oboeInit(options);
+    }
+
+    gc();
+
+    // now see if the code loses memory. if it's less than 1 byte per iteration
+    // then it's not losing memory for all practical purposes.
+    const start2 = process.memoryUsage().rss + checkCount;
+    for (let i = checkCount; i > 0; i--) {
+      bindings.oboeInit(options);
+    }
+
+    gc();
+
+    // give garbage collection a window to kick in.
+    setTimeout(function () {
+      const finish = process.memoryUsage().rss;
+      expect(finish).lte(start2, `should execute ${checkCount} metrics without memory growth`);
+      //console.log('s1', start1, 's2', start2 - checkCount, 'fin', finish);
+      done()
+    }, 250)
+
+
+    if (typeof global.gc === 'function') {
+      global.gc();
+    }
   })
 })
