@@ -28,9 +28,12 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
     oboe_init_options_set_defaults(&options);
 
     // a place to save the strings so they won't go out of scope. using the
-    // number of properties is more than will ever be needed but it's a safe
-    // number.
-    std::vector<std::string> holdKeys;
+    // number of properties is more than will ever be needed because neither
+    // booleans nor integers are stored.
+    Napi::Array keys = o.GetPropertyNames();
+    std::string fill;
+    std::vector<std::string> holdKeys(keys.Length(), fill);
+    int kix = -1;
 
     bool debug = o.Get("debug").ToBoolean().Value();
     // make an output object. it's only filled in when debugging.
@@ -44,8 +47,8 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       if (hostnameAlias.IsString()) {
         if (debug)
           oo.Set("hostnameAlias", hostnameAlias);
-        holdKeys.push_back(hostnameAlias.ToString());
-        options.hostname_alias = holdKeys.back().c_str();
+        holdKeys[++kix] = hostnameAlias.ToString();
+        options.hostname_alias = holdKeys[kix].c_str();
       }
     }
     if (o.Has("logLevel")) {
@@ -61,8 +64,8 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       if (logFilePath.IsString()) {
         if (debug)
           oo.Set("logFilePath", logFilePath);
-        holdKeys.push_back(logFilePath.ToString());
-        options.log_file_path = holdKeys.back().c_str();
+        holdKeys[++kix] = logFilePath.ToString();
+        options.log_file_path = holdKeys[kix].c_str();
       }
     }
     if (o.Has("maxTransactions")) {
@@ -102,8 +105,8 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       if (reporter.IsString()) {
         if (debug)
           oo.Set("reporter", reporter);
-        holdKeys.push_back(reporter.ToString());
-        options.reporter = holdKeys.back().c_str();
+        holdKeys[++kix] = reporter.ToString();
+        options.reporter = holdKeys[kix].c_str();
       }
     }
     // endpoint maps to "host" field.
@@ -112,8 +115,8 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       if (endpoint.IsString()) {
         if (debug)
           oo.Set("endpoint", endpoint);
-        holdKeys.push_back(endpoint.ToString());
-        options.host = holdKeys.back().c_str();
+        holdKeys[++kix] = endpoint.ToString();
+        options.host = holdKeys[kix].c_str();
       }
     }
     // is the service key
@@ -122,8 +125,8 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       if (serviceKey.IsString()) {
         if (debug)
           oo.Set("serviceKey", serviceKey);
-        holdKeys.push_back(serviceKey.ToString());
-        options.service_key = holdKeys.back().c_str();
+        holdKeys[++kix] = serviceKey.ToString();
+        options.service_key = holdKeys[kix].c_str();
       }
     }
     if (o.Has("trustedPath")) {
@@ -131,8 +134,8 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       if (trustedPath.IsString()) {
         if (debug)
           oo.Set("trustedPath", trustedPath);
-        holdKeys.push_back(trustedPath.ToString());
-        options.trusted_path = holdKeys.back().c_str();
+        holdKeys[++kix] = trustedPath.ToString();
+        options.trusted_path = holdKeys[kix].c_str();
       }
     }
     if (o.Has("bufferSize")) {
