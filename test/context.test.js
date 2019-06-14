@@ -74,71 +74,6 @@ describe('addon.context', function () {
     expect(rateUsed).equal(-1)
   })
 
-  it('should serialize context to string', function () {
-    bindings.Context.clear()
-    var string = bindings.Context.toString()
-    expect(string).equal('2B0000000000000000000000000000000000000000000000000000000000')
-  })
-
-  it('should set context to metadata instance', function () {
-    var md = bindings.Metadata.fromContext()
-    var event = new bindings.Event(md)
-    bindings.Context.set(event.getMetadata())
-    const v = bindings.Context.toString()
-    expect(v).not.equal('')
-    expect(v).equal(event.getMetadata().toString())
-  })
-
-  it('should set context from metadata string', function () {
-    var md =  bindings.Metadata.fromContext()
-    var event = new bindings.Event(md)
-    var string = event.getMetadata().toString()
-    bindings.Context.set(string)
-    var v = bindings.Context.toString()
-    expect(v).not.equal('')
-    expect(v).equal(string)
-  })
-
-  it('should clear the context', function () {
-    var string = '2B0000000000000000000000000000000000000000000000000000000000'
-    expect(string).not.equal(bindings.Context.toString())
-    bindings.Context.clear()
-    expect(string).equal(bindings.Context.toString())
-  })
-
-  it('should create an event from the current context', function () {
-    // Event should use current context if no argument is supplied.
-    const event = new bindings.Event()
-    expect(event).instanceOf(bindings.Event)
-  })
-
-  it('should start a trace from the current context', function () {
-    var event = bindings.Context.createEventX()
-    expect(event).instanceOf(bindings.Event)
-  })
-
-  it('should allow any signature of createEventX', function () {
-    var string = '2B0000000000000000000000000000000000000000000000000000000000'
-    var md = bindings.Metadata.makeRandom()
-    var event = bindings.Context.createEventX()
-    expect(event).instanceOf(bindings.Event)
-
-    event = bindings.Context.createEventX(string)
-    expect(event).instanceOf(bindings.Event)
-
-    event = bindings.Context.createEventX(event)
-    expect(event).instanceOf(bindings.Event)
-
-    event = bindings.Context.createEventX(md)
-    expect(event).instanceOf(bindings.Event)
-
-    event = bindings.Context.createEventX(md, false)
-    expect(event).instanceOf(bindings.Event)
-
-    event = bindings.Context.createEventX(md, true)
-    expect(event).instanceOf(bindings.Event)
-  })
-
   it('should tell us that a non-traced xtrace doesn\'t need to be sampled', function () {
     var md = bindings.Metadata.makeRandom(0)
     var settings = bindings.Context.getTraceSettings({xtrace: md.toString()})
@@ -149,7 +84,7 @@ describe('addon.context', function () {
   it('should get verification that a request should be sampled', function (done) {
     bindings.Context.setTracingMode(bindings.TRACE_ALWAYS)
     bindings.Context.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE)
-    var event = bindings.Context.createEventX(bindings.Metadata.makeRandom(1))
+    var event = new bindings.Event(bindings.Metadata.makeRandom(1));
     var metadata = event.getMetadata()
     metadata.setSampleFlagTo(1)
     var xid = metadata.toString();
@@ -177,26 +112,15 @@ describe('addon.context', function () {
     }, 50)
   })
 
-  it('should be invalid when empty', function () {
-    bindings.Context.clear()
-    expect(bindings.Context.isValid()).equal(false)
-  })
-
-  it('should be valid when not empty', function () {
-    const md = bindings.Metadata.makeRandom(1)
-    bindings.Context.set(md)
-    expect(bindings.Context.isValid()).equal(true)
-  })
-
   it('should not set sample bit unless specified', function () {
     const md0 = bindings.Metadata.makeRandom(0)
     const md1 = bindings.Metadata.makeRandom(1)
 
-    let event = bindings.Context.createEventX(md0)
+    let event = new bindings.Event(md0)
     expect(event.getSampleFlag()).equal(false)
     expect(event.toString().slice(-2)).equal('00')
 
-    event = bindings.Context.createEventX(md1)
+    event = new bindings.Event(md1)
     expect(event.getSampleFlag()).equal(true)
     expect(event.toString().slice(-2)).equal('01')
   })

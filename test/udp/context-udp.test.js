@@ -1,15 +1,16 @@
 const expect = require('chai').expect
 
-// change the environment so oboe will use udp
-process.env.APPOPTICS_REPORTER = 'udp'
-process.env.REPORTER_UDP = 'localhost:7832'
-
 let bindings
 
 describe('addon.context-udp', function () {
   before(function (done) {
+    const initOptions = {
+      serviceKey: process.env.APPOPTICS_SERVICE_KEY,
+      reporter: 'udp',
+      host: 'localhost:7832',
+    }
     bindings = require('../..')
-    bindings.oboeInit(process.env.APPOPTICS_SERVICE_KEY, {})
+    bindings.oboeInit(initOptions);
     bindings.Reporter.isReadyToSample(2000)
     done()
   })
@@ -23,15 +24,15 @@ describe('addon.context-udp', function () {
     var settings = bindings.Context.getTraceSettings({xtrace: md.toString()})
     debugger
     expect(settings).property('status', -1)                     // -1 means non-sampled xtrace
-    expect(settings.source).equal(2)                            // 2 compiled default
+    expect(settings.source).equal(6)                            // 6 remote default
     expect(settings.metadata.toString().slice(-2)).equal('00')
   })
 
   it('should get verification that a request should be sampled', function (done) {
     bindings.Context.setTracingMode(bindings.TRACE_ALWAYS)
     bindings.Context.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE)
-    var event = bindings.Context.createEventX(bindings.Metadata.makeRandom(1))
-    var metadata = event.getMetadata()
+    const event = new bindings.Event(bindings.Metadata.makeRandom(1));
+    const metadata = event.getMetadata();
     metadata.setSampleFlagTo(1)
     var xid = metadata.toString();
     var counter = 20
