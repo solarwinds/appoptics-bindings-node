@@ -1,9 +1,9 @@
-const bindings = require('../')
+const bindings = require('..')
 const expect = require('chai').expect
 
 const serviceKey = `${process.env.AO_TOKEN_PROD}:node-bindings-test`;
 
-describe('addon.context', function () {
+describe('addon.settings', function () {
 
   it('should initialize oboe with only a service key', function () {
     const result = bindings.oboeInit({serviceKey});
@@ -12,15 +12,15 @@ describe('addon.context', function () {
   })
 
   it('should set tracing mode to never', function () {
-    bindings.Context.setTracingMode(bindings.TRACE_NEVER)
+    bindings.Settings.setTracingMode(bindings.TRACE_NEVER)
   })
   it('should set tracing mode to always', function () {
-    bindings.Context.setTracingMode(bindings.TRACE_ALWAYS)
+    bindings.Settings.setTracingMode(bindings.TRACE_ALWAYS)
   })
 
   it('should throw setting invalid tracing mode value', function () {
     try {
-      bindings.Context.setTracingMode(3)
+      bindings.Settings.setTracingMode(3)
     } catch (e) {
       if (e.message === 'Invalid tracing mode') {
         return
@@ -32,7 +32,7 @@ describe('addon.context', function () {
 
   it('should throw setting invalid tracing mode type', function () {
     try {
-      bindings.Context.setTracingMode('foo')
+      bindings.Settings.setTracingMode('foo')
     } catch (e) {
       if (e.message === 'Invalid arguments') {
         return
@@ -43,14 +43,14 @@ describe('addon.context', function () {
   })
 
   it('should set valid sample rate', function () {
-    bindings.Context.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE / 10)
+    bindings.Settings.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE / 10)
   })
 
   it('should not throw when setting invalid sample rate', function () {
     var threw = false
     try {
-      bindings.Context.setDefaultSampleRate(-1)
-      bindings.Context.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE + 1)
+      bindings.Settings.setDefaultSampleRate(-1)
+      bindings.Settings.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE + 1)
     } catch (e) {
       threw = true
     }
@@ -60,30 +60,30 @@ describe('addon.context', function () {
 
   it('should handle bad sample rates correctly', function () {
     var rateUsed
-    rateUsed = bindings.Context.setDefaultSampleRate(-1)
+    rateUsed = bindings.Settings.setDefaultSampleRate(-1)
     expect(rateUsed).equal(0)
-    rateUsed = bindings.Context.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE + 1)
+    rateUsed = bindings.Settings.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE + 1)
     expect(rateUsed).equal(bindings.MAX_SAMPLE_RATE)
 
-    rateUsed = bindings.Context.setDefaultSampleRate(100000)
+    rateUsed = bindings.Settings.setDefaultSampleRate(100000)
     expect(rateUsed).equal(100000)
     // the C++ code cannot ask oboe what rate was in effect. NaN doesn't not
     // change the value because it cannot be compared, so the addon returns -1.
     // appoptics-apm keeps a local copy of the value and handles this correctly.
-    rateUsed = bindings.Context.setDefaultSampleRate(NaN)
+    rateUsed = bindings.Settings.setDefaultSampleRate(NaN)
     expect(rateUsed).equal(-1)
   })
 
   it('should tell us that a non-traced xtrace doesn\'t need to be sampled', function () {
     var md = bindings.Metadata.makeRandom(0)
-    var settings = bindings.Context.getTraceSettings({xtrace: md.toString()})
+    var settings = bindings.Settings.getTraceSettings({xtrace: md.toString()})
 
     expect(settings).property('status', -1)       // -1 means non-sampled xtrace
   })
 
   it('should get verification that a request should be sampled', function (done) {
-    bindings.Context.setTracingMode(bindings.TRACE_ALWAYS)
-    bindings.Context.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE)
+    bindings.Settings.setTracingMode(bindings.TRACE_ALWAYS)
+    bindings.Settings.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE)
     var event = new bindings.Event(bindings.Metadata.makeRandom(1));
     var metadata = event.getMetadata()
     metadata.setSampleFlagTo(1)
@@ -92,7 +92,7 @@ describe('addon.context', function () {
     // poll to give time for the SSL connection to complete. it should have
     // been waited on in before() but it's possible for the connection to break.
     var id = setInterval(function() {
-      var settings = bindings.Context.getTraceSettings({xtrace: xid})
+      var settings = bindings.Settings.getTraceSettings({xtrace: xid})
       if (--counter <= 0 || typeof settings === 'object' && settings.source !== 2) {
         clearInterval(id)
         expect(settings).property('doSample', true)

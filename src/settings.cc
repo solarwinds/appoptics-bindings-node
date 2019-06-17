@@ -219,8 +219,9 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
 
 //
 // This is not a class, just a group of functions in a JavaScript namespace.
+// (well, in two javascript namespaces.)
 //
-namespace OboeContext {
+namespace Settings {
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
@@ -232,9 +233,14 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
   module.Set("getTraceSettings", Napi::Function::New(env, getTraceSettings));
 
+  exports.Set("Settings", module);
+
+  //
+  // for legacy compatibility, keep the Context namespace valid
+  //
   exports.Set("Context", module);
 
   return exports;
 }
 
-} // end namespace OboeContext
+} // end namespace Settings

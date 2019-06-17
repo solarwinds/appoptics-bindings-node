@@ -108,10 +108,10 @@ public:
 };
 
 //
-// OboeContext is a collection of functions providing access to the oboe
-// context functions.
+// Settings is a collection of functions for getting/setting
+// oboe's tracing settings
 //
-namespace OboeContext {
+namespace Settings {
   Napi::Object Init(Napi::Env, Napi::Object);
 }
 

@@ -21,7 +21,7 @@ describe('addon.context-udp', function () {
 
   it('should tell us that a non-traced xtrace doesn\'t need to be sampled', function () {
     var md = bindings.Metadata.makeRandom(0)
-    var settings = bindings.Context.getTraceSettings({xtrace: md.toString()})
+    var settings = bindings.Settings.getTraceSettings({xtrace: md.toString()})
     debugger
     expect(settings).property('status', -1)                     // -1 means non-sampled xtrace
     expect(settings.source).equal(6)                            // 6 remote default
@@ -29,8 +29,8 @@ describe('addon.context-udp', function () {
   })
 
   it('should get verification that a request should be sampled', function (done) {
-    bindings.Context.setTracingMode(bindings.TRACE_ALWAYS)
-    bindings.Context.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE)
+    bindings.Settings.setTracingMode(bindings.TRACE_ALWAYS)
+    bindings.Settings.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE)
     const event = new bindings.Event(bindings.Metadata.makeRandom(1));
     const metadata = event.getMetadata();
     metadata.setSampleFlagTo(1)
@@ -39,7 +39,7 @@ describe('addon.context-udp', function () {
     // poll to give time for the SSL connection to complete. it should have
     // been waited on in before() but it's possible for the connection to break.
     var id = setInterval(function() {
-      var settings = bindings.Context.getTraceSettings({xtrace: xid})
+      var settings = bindings.Settings.getTraceSettings({xtrace: xid})
       if (settings.status == 0 && settings.source !== 2) {
         clearInterval(id)
         expect(settings).property('doSample', true)
