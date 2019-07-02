@@ -7,7 +7,8 @@ describe('addon.settings', function () {
 
   it('should initialize oboe with only a service key', function () {
     const result = bindings.oboeInit({serviceKey});
-    expect(result).equal(0);
+    // either already init'd or success.
+    expect(result).oneOf([-1, 0]);
     bindings.Reporter.isReadyToSample(2000)
   })
 
