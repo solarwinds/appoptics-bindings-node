@@ -192,12 +192,15 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   in.custom_tracing_mode = mode;
 
   // v2 fields (added for trigger-trace support)
+  in.custom_trigger_mode = -1;
   in.request_type = type_requested;
   in.header_options = xtraceOpts.c_str();
   in.header_signature = xtraceOptsSig.c_str();
   in.header_timestamp = xtraceOptsTimestamp;
 
+
   // ask for oboe's decisions on life, the universe, and everything.
+  out.version = 2;
   int status = oboe_tracing_decisions(&in, &out);
 
   // version 2 of the oboe_tracing_decisions_out structure returns a
@@ -206,23 +209,14 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   // -2 tracing-mode-disabled
   // -1 xtrace-not-sampled
   // 0 ok
-  // 1 no output structure (internal error)
-  // 2 no default config (internal error)
-  // 3 reporter not ready
-  // 4 settings not available
-  // 5 send queue full
-  // 6 no token
-  // 7 invalid signature
-  // 8 bad timestamp
-  // 9 rate exceeded
-  // 10 trigger-trace-disabled
+
 
   // set the message and auth info for both error and successful returns
   Napi::Object o = Napi::Object::New(env);
-  o.Set("status", status);
-  o.Set("message", out.status_message);
-  o.Set("authStatus", out.auth_status);
-  o.Set("authMessage", out.auth_message);
+  o.Set("status", Napi::Number::New(env, status));
+  o.Set("message", Napi::String::New(env, out.status_message));
+  o.Set("authStatus", Napi::Number::New(env, out.auth_status));
+  o.Set("authMessage", Napi::String::New(env, out.auth_message));
 
   // status > 0 is an error return; do no additional processing.
   if (status > 0) {
@@ -240,7 +234,7 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   Napi::Value v = Napi::External<oboe_metadata_t>::New(env, &omd);
   Napi::Object md = Metadata::NewInstance(env, v);
 
-  // assemble the return object
+  // augment the return object
   o.Set("metadata", md);
   o.Set("metadataFromXtrace", Napi::Boolean::New(env, have_metadata));
   //o.Set("status", Napi::Number::New(env, status));
