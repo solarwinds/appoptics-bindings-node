@@ -99,6 +99,10 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   // edge back to supplied metadata unless there is none.
   bool edge = true;
 
+  // debugging booleans
+  bool showIn = false;
+  bool showOut = false;
+
   //
   // trigger trace extensions
   //
@@ -107,7 +111,7 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   int type_requested = 0;
   std::string xtraceOpts("");
   std::string xtraceOptsSig("");
-  int xtraceOptsTimestamp = 0;
+  int64_t xtraceOptsTimestamp = 0;
 
   // caller specified values. errors are ignored and default values are used.
   if (info[0].IsObject()) {
@@ -159,8 +163,6 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
     } else {
       type_requested = 0;
     }
-
-
     v = o.Get("xtraceOpts");
     if (v.IsString()) {
       xtraceOpts = v.As<Napi::String>();
@@ -173,6 +175,10 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
     if (v.IsNumber()) {
       xtraceOptsTimestamp = v.As<Napi::Number>().Int64Value();
     }
+
+    // debug options
+    showIn = o.Get("showIn").ToBoolean().Value();
+    showOut = o.Get("showOut").ToBoolean().Value();
   }
 
   // if no xtrace or the xtrace was bad then construct new metadata.
@@ -198,6 +204,18 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   in.header_signature = xtraceOptsSig.c_str();
   in.header_timestamp = xtraceOptsTimestamp;
 
+  if (showIn) {
+    //std::cout << "version: " << in.version << std::endl;
+    //std::cout << "service_name: " << in.service_name << std::endl;
+    //std::cout << "in_xtrace: " << in.in_xtrace << std::endl;
+    //std::cout << "custom_sample_rate: " << in.custom_sample_rate << std::endl;
+    //std::cout << "custom_tracing_mode: " << in.custom_tracing_mode << std::endl;
+    //std::cout << "custom_trigger_mode: " << in.custom_trigger_mode << std::endl;
+    //std::cout << "request_type: " << in.request_type << std::endl;
+    //std::cout << "header_options: " << in.header_options << std::endl;
+    //std::cout << "header_signature: " << in.header_signature << std::endl;
+    //std::cout << "header_timestamp: " << in.header_timestamp << std::endl;
+  }
 
   // ask for oboe's decisions on life, the universe, and everything.
   out.version = 2;
