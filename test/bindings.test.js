@@ -49,7 +49,8 @@ const goodOptions = {
   maxFlushWaitTime: 100,
   eventsFlushInterval: 100,
   eventsFlushBatchSize: 100,
-  oneFilePerEvent: 1
+  oneFilePerEvent: 1,
+  ec2MetadataTimeout: 3000,
 }
 
 const goodBooleans = {
@@ -74,7 +75,8 @@ const badOptions = {
   maxFlushWaitTime: 'a',
   eventsFlushInterval: 'a',
   eventsFlushBatchSize: 'a',
-  oneFilePerEvent: undefined
+  oneFilePerEvent: undefined,
+  ec2MetadataTimeout: 'x',
 }
 
 const badBooleans = {
@@ -114,7 +116,7 @@ function convert (string, type) {
 }
 
 // set noop true so it doesn't actually call oboeInit().
-const defaultOptions = {
+const debugOption = {
   debug: true,
 }
 
@@ -122,20 +124,20 @@ const defaultOptions = {
 describe('addon.oboeInit()', function () {
 
   it('should handle good options values', function () {
-    const options = Object.assign({}, goodOptions, defaultOptions);
+    const options = Object.assign({}, goodOptions, debugOption);
     const expected = Object.assign({}, goodOptions, goodBooleans);
     var result = bindings.oboeInit(options);
     expect(result).deep.equal(expected);
   })
 
   it('should handle bad options values', function () {
-    const options = Object.assign({}, badOptions, defaultOptions);
+    const options = Object.assign({}, badOptions, debugOption);
     var result = bindings.oboeInit(options);
     expect(result).deep.equal(badBooleans);
   })
 
   it('should handle the environment variable values', function () {
-    const options = Object.assign({}, envOptions, defaultOptions)
+    const options = Object.assign({}, envOptions, debugOption)
     var result = bindings.oboeInit(options);
     expect(result).deep.equal(envOptions, 'initialization should succeeed');
   })
@@ -149,7 +151,7 @@ describe('addon.oboeInit()', function () {
     this.timeout(40000);
     const warmup = 1000000;
     const checkCount = 1000000;
-    const options = Object.assign({}, goodOptions, defaultOptions);
+    const options = Object.assign({}, goodOptions, debugOption);
 
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;

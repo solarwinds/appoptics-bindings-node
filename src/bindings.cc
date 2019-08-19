@@ -183,6 +183,15 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
       if (debug)
         oo.Set("oneFilePerEvent", oneFilePerEvent.ToBoolean().Value());;
     }
+    if (o.Has("ec2MetadataTimeout")) {
+      Napi::Value ec2MetadataTimeout = o.Get("ec2MetadataTimeout");
+      if (ec2MetadataTimeout.IsNumber()) {
+        if (debug) {
+          oo.Set("ec2MetadataTimeout", ec2MetadataTimeout);
+        }
+        options.ec2_metadata_timeout =  ec2MetadataTimeout.ToNumber().Int32Value();
+      }
+    }
 
     if (debug) {
       return oo;
