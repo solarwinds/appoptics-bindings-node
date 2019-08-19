@@ -100,8 +100,8 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   bool edge = true;
 
   // debugging booleans
-  bool showIn = false;
-  bool showOut = false;
+  //bool showIn = false;
+  //bool showOut = false;
 
   //
   // trigger trace extensions
@@ -177,8 +177,8 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
     }
 
     // debug options
-    showIn = o.Get("showIn").ToBoolean().Value();
-    showOut = o.Get("showOut").ToBoolean().Value();
+    //showIn = o.Get("showIn").ToBoolean().Value();
+    //showOut = o.Get("showOut").ToBoolean().Value();
   }
 
   // if no xtrace or the xtrace was bad then construct new metadata.
@@ -204,18 +204,18 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   in.header_signature = xtraceOptsSig.c_str();
   in.header_timestamp = xtraceOptsTimestamp;
 
-  if (showIn) {
-    //std::cout << "version: " << in.version << std::endl;
-    //std::cout << "service_name: " << in.service_name << std::endl;
-    //std::cout << "in_xtrace: " << in.in_xtrace << std::endl;
-    //std::cout << "custom_sample_rate: " << in.custom_sample_rate << std::endl;
-    //std::cout << "custom_tracing_mode: " << in.custom_tracing_mode << std::endl;
-    //std::cout << "custom_trigger_mode: " << in.custom_trigger_mode << std::endl;
-    //std::cout << "request_type: " << in.request_type << std::endl;
-    //std::cout << "header_options: " << in.header_options << std::endl;
-    //std::cout << "header_signature: " << in.header_signature << std::endl;
-    //std::cout << "header_timestamp: " << in.header_timestamp << std::endl;
-  }
+  //if (showIn) {
+  //  std::cout << "version: " << in.version << std::endl;
+  //  std::cout << "service_name: " << in.service_name << std::endl;
+  //  std::cout << "in_xtrace: " << in.in_xtrace << std::endl;
+  //  std::cout << "custom_sample_rate: " << in.custom_sample_rate << std::endl;
+  //  std::cout << "custom_tracing_mode: " << in.custom_tracing_mode << std::endl;
+  //  std::cout << "custom_trigger_mode: " << in.custom_trigger_mode << std::endl;
+  //  std::cout << "request_type: " << in.request_type << std::endl;
+  //  std::cout << "header_options: " << in.header_options << std::endl;
+  //  std::cout << "header_signature: " << in.header_signature << std::endl;
+  //  std::cout << "header_timestamp: " << in.header_timestamp << std::endl;
+  //}
 
   // ask for oboe's decisions on life, the universe, and everything.
   out.version = 2;
