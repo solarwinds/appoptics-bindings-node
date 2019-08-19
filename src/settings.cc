@@ -158,10 +158,9 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
     }
 
     // now handle x-trace-options and x-trace-options-signature
-    if (o.Get("ttRequested").ToBoolean().Value()) {
-      type_requested = 1;
-    } else {
-      type_requested = 0;
+    v = o.Get("typeRequested");
+    if (v.IsNumber()) {
+      type_requested = v.As<Napi::Number>().Int64Value();
     }
     v = o.Get("xtraceOpts");
     if (v.IsString()) {
@@ -235,6 +234,7 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   o.Set("message", Napi::String::New(env, out.status_message));
   o.Set("authStatus", Napi::Number::New(env, out.auth_status));
   o.Set("authMessage", Napi::String::New(env, out.auth_message));
+  o.Set("typeProvisioned", Napi::Number::New(env, out.request_provisioned));
 
   // status > 0 is an error return; do no additional processing.
   if (status > 0) {
