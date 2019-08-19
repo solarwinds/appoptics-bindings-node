@@ -505,6 +505,9 @@ void oboe_shutdown();
 // error status needs to be reported to the user, while codes > 0 are errors that
 // need to be reported.
 
+#define OBOE_TRACING_DECISIONS_FAILED_AUTH -5
+#define OBOE_TRACING_DECISIONS_TRIGGERED_TRACE_EXHAUSTED -4
+#define OBOE_TRACING_DECISIONS_TRIGGERED_TRACE_DISABLED -3
 #define OBOE_TRACING_DECISIONS_TRACING_DISABLED -2
 #define OBOE_TRACING_DECISIONS_XTRACE_NOT_SAMPLED -1
 #define OBOE_TRACING_DECISIONS_OK 0
@@ -513,9 +516,7 @@ void oboe_shutdown();
 #define OBOE_TRACING_DECISIONS_REPORTER_NOT_READY 3
 #define OBOE_TRACING_DECISIONS_NO_VALID_SETTINGS 4
 #define OBOE_TRACING_DECISIONS_QUEUE_FULL 5
-#define OBOE_TRACING_DECISIONS_TRIGGERED_TRACE_EXHAUSTED 6
-#define OBOE_TRACING_DECISIONS_TRIGGERED_TRACE_DISABLED 7
-#define OBOE_TRACING_DECISIONS_BAD_ARG 8
+#define OBOE_TRACING_DECISIONS_BAD_ARG 6
 
 // convert above codes into const char* messages.
 const char* oboe_get_tracing_decisions_message(int code);
@@ -593,8 +594,6 @@ typedef struct {
     volatile uint32_t through_ignored_count;    // # of new requests, that are rejected due to start_always_flag == 0
                                                 // that have through_always_flag == 1
     volatile uint32_t triggered_count;             // # of triggered traces
-    volatile uint32_t triggered_ignored_count;     // # of ignored triggered traces
-    volatile uint32_t triggered_exhaustion_count;  // # of times the token bucket limiting caused a triggered trace to not occur
     volatile uint32_t last_used_sample_rate;
     volatile uint32_t last_used_sample_source;
 
