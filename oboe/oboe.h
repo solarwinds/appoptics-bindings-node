@@ -389,7 +389,12 @@ int oboe_init(oboe_init_options_t* options);
  */
 int oboe_init_reporter(const char *protocol, oboe_init_options_t *options);
 
-void oboe_init_options_set_defaults(oboe_init_options_t *options);
+/**
+ * returns one of these:
+ * - OBOE_INIT_OPTIONS_SET_DEFAULTS_OK
+ * - OBOE_INIT_OPTIONS_SET_DEFAULTS_WRONG_VERSION
+ */
+int oboe_init_options_set_defaults(oboe_init_options_t *options);
 
 /**
  * Disconnect or shut down the Oboe reporter, but allow it to be reconnect()ed.
@@ -535,6 +540,9 @@ const char* oboe_get_tracing_decisions_auth_message (int code);
 #define OBOE_REQUEST_TYPE_REGULAR 0
 #define OBOE_REQUEST_TYPE_TRIGGER 1
 
+#define OBOE_INIT_OPTIONS_SET_DEFAULTS_OK 0
+#define OBOE_INIT_OPTIONS_SET_DEFAULTS_WRONG_VERSION 1
+
 //
 // these codes are returned by oboe_init(), oboe_init_reporter(), _oboe_create_reporter()
 //
@@ -551,16 +559,16 @@ const char* oboe_get_tracing_decisions_auth_message (int code);
 #define OBOE_INIT_SSL_LOAD_CERT 9
 #define OBOE_INIT_SSL_REPORTER_CREATE 10
 
-    // token buckets
-    enum TOKEN_BUCKETS {
-      TOKEN_BUCKET_SAMPLING,    // for normal requests
-      TOKEN_BUCKET_TT_RELAXED,  // for triggered traces initiated by Pingdom and
-                                // other trusted sources (relaxed settings)
-      TOKEN_BUCKET_TT_STRICT,   // for triggered traces initiated by CLI and
-                                // other untrusted sources (strict settings)
-      TOKEN_BUCKET_COUNT        // IMPORTANT NOTE: this must be the last element
-                                // inside the enum
-    };
+// token buckets
+enum TOKEN_BUCKETS {
+  TOKEN_BUCKET_SAMPLING,    // for normal requests
+  TOKEN_BUCKET_TT_RELAXED,  // for triggered traces initiated by Pingdom and
+                            // other trusted sources (relaxed settings)
+  TOKEN_BUCKET_TT_STRICT,   // for triggered traces initiated by CLI and
+                            // other untrusted sources (strict settings)
+  TOKEN_BUCKET_COUNT        // IMPORTANT NOTE: this must be the last element
+                            // inside the enum
+};
 
 typedef struct {
     uint32_t magic;

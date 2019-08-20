@@ -24,8 +24,13 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
 
     // setup oboe's options structure
     oboe_init_options_t options;
-    options.version = 5;
-    oboe_init_options_set_defaults(&options);
+    options.version = 7;
+
+    int setDefaultsStatus = oboe_init_options_set_defaults(&options);
+    if (setDefaultsStatus > 0) {
+      Napi::RangeError::New(env, "setting init option defaults failed").ThrowAsJavaScriptException();
+      return env.Null();
+    }
 
     // a place to save the strings so they won't go out of scope. using the
     // number of properties is more than will ever be needed because neither
