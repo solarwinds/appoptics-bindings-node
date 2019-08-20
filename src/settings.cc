@@ -112,6 +112,7 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   std::string xtraceOpts("");
   std::string xtraceOptsSig("");
   int64_t xtraceOptsTimestamp = 0;
+  int customTriggerMode = -1;
 
   // caller specified values. errors are ignored and default values are used.
   if (info[0].IsObject()) {
@@ -174,6 +175,10 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
     if (v.IsNumber()) {
       xtraceOptsTimestamp = v.As<Napi::Number>().Int64Value();
     }
+    v = o.Get("customTriggerMode");
+    if (v.IsNumber()) {
+      customTriggerMode = v.As<Napi::Number>().Int32Value();
+    }
 
     // debug options
     //showIn = o.Get("showIn").ToBoolean().Value();
@@ -197,7 +202,7 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   in.custom_tracing_mode = mode;
 
   // v2 fields (added for trigger-trace support)
-  in.custom_trigger_mode = -1;
+  in.custom_trigger_mode = customTriggerMode;
   in.request_type = type_requested;
   in.header_options = xtraceOpts.c_str();
   in.header_signature = xtraceOptsSig.c_str();
