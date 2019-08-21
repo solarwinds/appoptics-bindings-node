@@ -12,7 +12,7 @@ const goodOptions = {
   serviceKey: 'magical-service-key',
   trustedPath: 'secret-garden',
   hostnameAlias: 'incognito',
-  logLevel: 100,
+  logLevel: 3,
   reporter: 'udp',
   endpoint: 'localhost:9999',
   tokenBucketCapacity: 100,

@@ -102,7 +102,9 @@ describe('addon.settings', function () {
         expect(settings).property('edge', true)
         expect(settings.metadata).instanceof(bindings.Metadata)
         expect(settings).property('rate', bindings.MAX_SAMPLE_RATE);
-        expect(settings).property('source', 6);
+        // the following depends on whether this suite is run standalone or with other
+        // test files.
+        expect(settings.source).oneOf([1, 6]);
 
         if (counter < 0) {
           done(new Error('getTraceSettings() never returned valid settings'))
