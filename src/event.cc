@@ -393,6 +393,29 @@ int addKvPair(oboe_event_t* event, std::string key, Napi::Value value) {
 }
 
 //
+// add an edge
+//
+int addEdgeX(oboe_event_t* event, Napi::Value edge) {
+  // oboe returns -1 for errors, so this returns an error of 1
+  // so the two causes can be distinguished.
+  int status = 1;
+
+  if (!edge.IsObject() || edge.IsArray()) {
+    return status;
+  }
+
+  Napi::Object mb = edge.As<Napi::Object>().Get("buf").As<Napi::Object>();
+  Napi::Buffer<uint8_t> buf = mb.As<Napi::Buffer<uint8_t>>();
+
+  oboe_metadata_t oboe_md;
+  initializeOboeMd(oboe_md, buf);
+
+  status = oboe_event_add_edge(event, &oboe_md);
+
+  return status;
+}
+
+//
 // Event send function. The edges and KVs have been validated
 // by the JavaScript Event class so minimal checking is required.
 //
@@ -403,8 +426,12 @@ Napi::Value Event::send(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "Invalid signature").ThrowAsJavaScriptException();
     return env.Null();
   }
+
+  // the default is to use the OBOE_SEND_EVENT channel. A truthy second argument
+  // will result in using the OBOE_SEND_STATUS channel.
   Napi::Object event = info[0].As<Napi::Object>();
-  bool useStatusChannel = info[1].ToBoolean().Value();
+  const int channel = info[1].ToBoolean().Value() ? OBOE_SEND_STATUS : OBOE_SEND_EVENT;
+  //bool useStatusChannel = info[1].ToBoolean().Value();
 
   if (!validEvent(event)) {
     Napi::TypeError::New(env, "Not a valid Event").ThrowAsJavaScriptException();
@@ -423,7 +450,7 @@ Napi::Value Event::send(const Napi::CallbackInfo& info) {
   Napi::Object mb = event.Get("mb").As<Napi::Object>().Get("buf").As<Napi::Object>();
   Napi::Buffer<uint8_t> buf = mb.As<Napi::Buffer<uint8_t>>();
 
-  // return any errors here.
+  // return any errors in this array.
   Napi::Array errors = Napi::Array::New(env);
 
   oboe_metadata_t oboe_md;
@@ -442,14 +469,48 @@ Napi::Value Event::send(const Napi::CallbackInfo& info) {
     int status = addKvPair(&oboe_event, key, kvs.Get(key));
     if (status != 0) {
       Napi::Object err = Napi::Object::New(env);
-      err.Set("code", "kv send failed");
+      err.Set("error", "kv send failed");
       err.Set("key", key);
+      err.Set("code", status);
       errors[errors.Length()] = err;
       scope.Escape(err);
     }
   }
 
+  // add edges
   Napi::Array edgeIndexes = edges.GetPropertyNames();
+  for (uint i = 0; i < edgeIndexes.Length(); i++) {
+    Napi::EscapableHandleScope scope(env);
+    Napi::Value v = edgeIndexes[i];
+    std::string index = v.ToString();
+    int status = addEdgeX(&oboe_event, edges.Get(index));
+    if (status != 0) {
+      Napi::Object err = Napi::Object::New(env);
+      err.Set("error", "add edge failed");
+      err.Set("edgeIndex", i);
+      errors[errors.Length()] = err;
+      scope.Escape(err);
+    }
+  }
+
+  // now ask oboe to send it, really.
+  oboe_event.bb_str = oboe_bson_buffer_finish(&oboe_event.bbuf);
+  if (!oboe_event.bb_str) {
+    Napi::Object err = Napi::Object::New(env);
+    err.Set("error", "failed to finish bson buffer");
+    errors[errors.Length()] = err;
+  }
+
+  size_t bb_len = (size_t)(oboe_event.bbuf.cur - oboe_event.bbuf.buf);
+
+  int status = oboe_raw_send(channel, oboe_event.bb_str, bb_len);
+
+  if (status < (int)bb_len) {
+    Napi::Object err = Napi::Object::New(env);
+    err.Set("error", "failed to finish bson buffer");
+    err.Set("code", status);
+    errors[errors.Length()] = err;
+  }
 
   /*
   for (uint i = 0; i < OBOE_MAX_TASK_ID_LEN; i++) {
@@ -460,36 +521,11 @@ Napi::Value Event::send(const Napi::CallbackInfo& info) {
     std::cout << std::hex << std::setfill('0') << std::setw(2) << (uint)oboe_md.ids.op_id[i];
   }
   std::cout << "\n";
-
-  Napi::Array props = event.GetPropertyNames();
-  Napi::Array keys = Napi::Array::New(env);
-
-
-  for (uint i = 0; i < props.Length(); i++) {
-    Napi::Value key = props[i];
-    //keys[i] = key.ToString();
-  }
-
-  result.Set("keys", keys);
   // */
 
   result.Set("status", errors.Length() == 0);
   result.Set("errors", errors);
-  result.Set("statusChannel", useStatusChannel);
-  result.Set("edgeIndexes", edgeIndexes);
-
-  /*
-  oboe_event_init(&event, &metadata, &opid);         // use event metadata and opid
-
-  loop:
-  oboe_event_add_info<_type> (&event, key, value);   // for all agent KV + hostname
-
-  loop: oboe_event_add_edge(&event, edge);           // if any
-
-  oboe_bson_buffer_finish(&event);
-
-  oboe_raw_send(&event);
-  */
+  result.Set("channel", channel);
 
   return result;
 }
