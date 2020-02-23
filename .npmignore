@@ -20,3 +20,4 @@ env.sh
 *-notes.md
 working/
 bench/
+.nyc_output/

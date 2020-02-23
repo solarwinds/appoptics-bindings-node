@@ -28,6 +28,7 @@ public:
   Napi::Value getSampleFlag(const Napi::CallbackInfo& info);
   Napi::Value setSampleFlagTo(const Napi::CallbackInfo& info);
   Napi::Value toString(const Napi::CallbackInfo& info);
+  Napi::Value toRawString(const Napi::CallbackInfo& info);
 
   // return a Metadata object
   static Napi::Value fromString(const Napi::CallbackInfo& info);
@@ -92,6 +93,7 @@ public:
   Napi::Value toString(const Napi::CallbackInfo& info);
   Napi::Value setSampleFlagTo(const Napi::CallbackInfo& info);
   Napi::Value getSampleFlag(const Napi::CallbackInfo& info);
+  static Napi::Value send(const Napi::CallbackInfo& info);
 
   // C++ instanceof equivalent
   static bool isEvent(Napi::Object);
@@ -100,11 +102,11 @@ public:
   static Napi::Object NewInstance(Napi::Env);
   static Napi::Object NewInstance(Napi::Env, oboe_metadata_t*, bool = true);
 
-private:
-  static Napi::FunctionReference constructor;
+   private:
+    static Napi::FunctionReference constructor;
 
-public:
-  static Napi::Object Init(Napi::Env, Napi::Object);
+   public:
+    static Napi::Object Init(Napi::Env, Napi::Object);
 };
 
 //

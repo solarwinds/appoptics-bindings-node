@@ -102,6 +102,52 @@ Napi::Value Metadata::getSampleFlag(const Napi::CallbackInfo& info) {
     return Napi::Boolean::New(info.Env(), this->sampleFlagIsOn());
 }
 
+Napi::Value Metadata::toRawString(const Napi::CallbackInfo& info) {
+  char buf[sizeof(oboe_metadata_t) * 2 + 2 + 1];
+  char *b = buf;
+  char base = 'a' - 10;
+
+  //bool skipLengths = info.Length() > 0;
+
+  auto puthex = [&b, base](uint8_t byte) {
+    int digit = (byte >> 4);
+    digit += digit <= 9 ? '0' : base;
+    *b++ = (char)digit;
+    digit = byte & 0xF;
+    digit += digit <= 9 ? '0' : base;
+    *b++ = (char)digit;
+
+    return b;
+  };
+
+  // skip arcane formatting rules. the version defines the rest.
+  *b++ = this->metadata.version + '0';
+  *b++ = 'b';
+  *b++ = ':';
+
+  char* p = reinterpret_cast<char*>(&this->metadata.ids.task_id);
+  size_t idsLength = OBOE_MAX_TASK_ID_LEN;
+
+  for(uint i = 0; i < idsLength; i++) {
+    puthex(*p++);
+  }
+  *b++ = ':';
+
+  p = reinterpret_cast<char*>(&this->metadata.ids.op_id);
+  idsLength = OBOE_MAX_OP_ID_LEN;
+
+  for (uint i = 0; i < idsLength; i++) {
+    puthex(*p++);
+  }
+  *b++ = ':';
+
+  puthex(this->metadata.flags);
+
+  *b = 0;
+
+  return Napi::String::New(info.Env(), buf);
+}
+
 Napi::Value Metadata::setSampleFlagTo(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
@@ -257,6 +303,7 @@ Napi::Object Metadata::Init(Napi::Env env, Napi::Object exports) {
     InstanceMethod("getSampleFlag", &Metadata::getSampleFlag),
     InstanceMethod("setSampleFlagTo", &Metadata::setSampleFlagTo),
     InstanceMethod("toString", &Metadata::toString),
+    InstanceMethod("toRawString", &Metadata::toRawString),
   });
 
   constructor = Napi::Persistent(ctor);
