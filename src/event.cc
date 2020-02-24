@@ -197,6 +197,14 @@ Napi::Value send(const Napi::CallbackInfo& info) {
     }
   }
 
+  int status = oboe_event_add_hostname(&oboe_event);
+  if (status != 0) {
+    Napi::Object err = Napi::Object::New(env);
+    err.Set("error", "add_hostname() failed");
+    err.Set("code", status);
+    errors[errors.Length()] = err;
+  }
+
   // now ask oboe to send it, really.
   oboe_event.bb_str = oboe_bson_buffer_finish(&oboe_event.bbuf);
   if (!oboe_event.bb_str) {
@@ -207,12 +215,12 @@ Napi::Value send(const Napi::CallbackInfo& info) {
 
   size_t bb_len = (size_t)(oboe_event.bbuf.cur - oboe_event.bbuf.buf);
 
-  int status = oboe_raw_send(channel, oboe_event.bb_str, bb_len);
+  int send_status = oboe_raw_send(channel, oboe_event.bb_str, bb_len);
 
-  if (status < (int)bb_len) {
+  if (send_status < (int)bb_len) {
     Napi::Object err = Napi::Object::New(env);
     err.Set("error", "failed to finish bson buffer");
-    err.Set("code", status);
+    err.Set("code", send_status);
     errors[errors.Length()] = err;
   }
 
