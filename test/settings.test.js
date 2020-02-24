@@ -78,8 +78,8 @@ describe('addon.settings', function () {
   })
 
   it('should tell us that a non-traced xtrace doesn\'t need to be sampled', function () {
-    const md = bindings.Metadata.makeRandom(0);
-    const settings = bindings.Settings.getTraceSettings({xtrace: md.toString()});
+    const xtrace = '2BBFBCAEFE62DB705CD41821C3F834BF4ACED13F2DCE86874D9047D39A00';
+    const settings = bindings.Settings.getTraceSettings({xtrace});
 
     expect(settings).property('status', -1)       // -1 means non-sampled xtrace
   })
@@ -87,22 +87,18 @@ describe('addon.settings', function () {
   it('should get verification that a request should be sampled', function (done) {
     bindings.Settings.setTracingMode(bindings.TRACE_ALWAYS)
     bindings.Settings.setDefaultSampleRate(bindings.MAX_SAMPLE_RATE)
-    const event = new bindings.Event(bindings.Metadata.makeRandom(1));
-    const metadata = event.getMetadata();
-    metadata.setSampleFlagTo(1)
-    const xid = metadata.toString();
+    const xtrace = '2BA54E1026661CA9A2D0E6F8229C4EC933D81A90360917684E7A2FFD2101';
     let counter = 20
     // poll to give time for the SSL connection to complete. it should have
     // been waited on in before() but it's possible for the connection to break.
     const id = setInterval(function () {
-      const settings = bindings.Settings.getTraceSettings({xtrace: xid})
+      const settings = bindings.Settings.getTraceSettings({xtrace})
       if (--counter <= 0 || typeof settings === 'object' && settings.source !== 2) {
         clearInterval(id)
         expect(settings).property('status', 0);
         expect(settings).property('doSample', true)
         expect(settings).property('doMetrics', true)
         expect(settings).property('edge', true)
-        expect(settings.metadata).instanceof(bindings.Metadata)
         expect(settings).property('rate', bindings.MAX_SAMPLE_RATE);
         // the following depends on whether this suite is run standalone or with other
         // test files.
@@ -115,18 +111,5 @@ describe('addon.settings', function () {
         }
       }
     }, 50)
-  })
-
-  it('should not set sample bit unless specified', function () {
-    const md0 = bindings.Metadata.makeRandom(0)
-    const md1 = bindings.Metadata.makeRandom(1)
-
-    let event = new bindings.Event(md0)
-    expect(event.getSampleFlag()).equal(false)
-    expect(event.toString().slice(-2)).equal('00')
-
-    event = new bindings.Event(md1)
-    expect(event.getSampleFlag()).equal(true)
-    expect(event.toString().slice(-2)).equal('01')
   })
 })
