@@ -270,6 +270,7 @@ oboe_event_t *oboe_event_new(const oboe_metadata_t *);
 int oboe_event_init     (oboe_event_t *, const oboe_metadata_t *, const uint8_t* event_op_id);
 int oboe_event_destroy  (oboe_event_t *);
 
+int oboe_event_add_hostname(oboe_event_t* event);
 int oboe_event_add_info (oboe_event_t *, const char *, const char *);
 int oboe_event_add_info_binary (oboe_event_t *, const char *, const char *, size_t);
 int oboe_event_add_info_int64 (oboe_event_t *, const char *, const int64_t);
