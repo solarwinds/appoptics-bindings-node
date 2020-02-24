@@ -254,8 +254,6 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   } else {
     omd.flags &= ~XTR_FLAGS_SAMPLED;
   }
-  Napi::Value v = Napi::External<oboe_metadata_t>::New(env, &omd);
-  //Napi::Object md = Metadata::NewInstance(env, v);
 
   // augment the return object
   o.Set("metadata", env.Null());
