@@ -495,10 +495,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Napi::Object module = Napi::Object::New(env);
 
   module.Set("isReadyToSample", Napi::Function::New(env, isReadyToSample));
-
   module.Set("sendHttpSpan", Napi::Function::New(env, sendHttpSpan));
   module.Set("sendNonHttpSpan", Napi::Function::New(env, sendNonHttpSpan));
-
   module.Set("sendMetric", Napi::Function::New(env, sendMetric));
   module.Set("sendMetrics", Napi::Function::New(env, sendMetrics));
 

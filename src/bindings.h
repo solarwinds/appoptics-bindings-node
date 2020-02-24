@@ -10,13 +10,6 @@
 typedef int (*send_generic_span_t) (char*, uint16_t, oboe_span_params_t*);
 
 //
-// Metadata is an empty module now. Remove it.
-//
-namespace Metadata {
-  Napi::Object Init(Napi::Env, Napi::Object);
-}
-
-//
 // new Event is a namespace for oboe_event-related functions
 // and declarations.
 //
