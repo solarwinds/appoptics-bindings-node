@@ -281,7 +281,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
   module.Set("setTracingMode", Napi::Function::New(env, setTracingMode));
   module.Set("setDefaultSampleRate", Napi::Function::New(env, setDefaultSampleRate));
-
   module.Set("getTraceSettings", Napi::Function::New(env, getTraceSettings));
 
   exports.Set("Settings", module);
