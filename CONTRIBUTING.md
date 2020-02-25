@@ -140,3 +140,17 @@ Find the versions of GLIBCXX required by a file
 Dump a `.node` file as asm (build debug for better symbols):
 
 `objdump -CRrS build/Release/ao-metrics.node  > ao-metrics.s`
+
+If you don't do much C++ output this might be handy for outputting hex. Or maybe just use
+printf.
+
+```
+  for (uint i = 0; i < OBOE_MAX_TASK_ID_LEN; i++) {
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (uint)oboe_md.ids.task_id[i];
+  }
+  std::cout << ":";
+  for (uint i = 0; i < OBOE_MAX_OP_ID_LEN; i++) {
+    std::cout << std::hex << std::setfill('0') << std::setw(2) << (uint)oboe_md.ids.op_id[i];
+  }
+  std::cout << "\n";
+```

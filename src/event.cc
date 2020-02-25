@@ -205,7 +205,7 @@ Napi::Value send(const Napi::CallbackInfo& info) {
     errors[errors.Length()] = err;
   }
 
-  // now ask oboe to send it, really.
+  // now ask oboe to send it after finishing the bson buffer.
   oboe_event.bb_str = oboe_bson_buffer_finish(&oboe_event.bbuf);
   if (!oboe_event.bb_str) {
     Napi::Object err = Napi::Object::New(env);
@@ -214,26 +214,17 @@ Napi::Value send(const Napi::CallbackInfo& info) {
   }
 
   size_t bb_len = (size_t)(oboe_event.bbuf.cur - oboe_event.bbuf.buf);
+  result.Set("bsonSize", bb_len);
 
   int send_status = oboe_raw_send(channel, oboe_event.bb_str, bb_len);
 
   if (send_status < (int)bb_len) {
     Napi::Object err = Napi::Object::New(env);
     err.Set("error", "failed to finish bson buffer");
-    err.Set("code", send_status);
+    err.Set("code", -1);
     errors[errors.Length()] = err;
+    result.Set("bsonSent", send_status);
   }
-
-  /*
-  for (uint i = 0; i < OBOE_MAX_TASK_ID_LEN; i++) {
-    std::cout << std::hex << std::setfill('0') << std::setw(2) << (uint)oboe_md.ids.task_id[i];
-  }
-  std::cout << ":";
-  for (uint i = 0; i < OBOE_MAX_OP_ID_LEN; i++) {
-    std::cout << std::hex << std::setfill('0') << std::setw(2) << (uint)oboe_md.ids.op_id[i];
-  }
-  std::cout << "\n";
-  // */
 
   result.Set("status", errors.Length() == 0);
   result.Set("errors", errors);
