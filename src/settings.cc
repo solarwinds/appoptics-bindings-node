@@ -89,10 +89,8 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
 
   oboe_tracing_decisions_in_t in;
   oboe_tracing_decisions_out_t out;
-  oboe_metadata_t omd;
 
   // in defaults
-  bool have_metadata = false;
   std::string xtrace("");
   int rate = -1;
   int mode = -1;
@@ -125,18 +123,19 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
 
       // make sure it's the right length before calling oboe.
       if (xtrace.length() == 60) {
+        oboe_metadata_t omd;
         // try to convert it to metadata. if it fails act as if no xtrace was
         // supplied.
         int status = oboe_metadata_fromstr(&omd, xtrace.c_str(), xtrace.length());
         // status can be zero with a version other than 2, so check that too.
         if (status < 0 || omd.version != 2) {
           xtrace = "";
-        } else {
-          have_metadata = true;
+          edge = false;
         }
       } else {
         // if it's the wrong length don't pass it to oboe
         xtrace = "";
+        edge = false;
       }
     }
 
@@ -153,7 +152,7 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
 
     // allow overriding the edge setting. it's not clear why
     // this might need to be done but it does add some control
-    // for testing or unforseen cases.
+    // for testing or unforeseen cases.
     if (o.Has("edge")) {
       edge = o.Get("edge").ToBoolean().Value();
     }
@@ -185,15 +184,6 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
     //showOut = o.Get("showOut").ToBoolean().Value();
   }
 
-  // if no xtrace or the xtrace was bad then construct new metadata.
-  // specifying the edge as true makes no sense in this case because
-  // there is no previous metadata.
-  if (!have_metadata) {
-    edge = false;
-    oboe_metadata_init(&omd);
-    oboe_metadata_random(&omd);
-  }
-
   // apply default or user specified values.
   in.version = 2;
   in.service_name = "";
@@ -221,17 +211,17 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   //  std::cout << "header_timestamp: " << in.header_timestamp << std::endl;
   //}
 
-  // ask for oboe's decisions on life, the universe, and everything.
-  out.version = 2;
-  int status = oboe_tracing_decisions(&in, &out);
-
   // version 2 of the oboe_tracing_decisions_out structure returns a
   // pointer to the message string for all codes.
   //
   // -2 tracing-mode-disabled
   // -1 xtrace-not-sampled
   // 0 ok
-
+  // > 0 is an error code
+  //
+  // ask for oboe's decisions on life, the universe, and everything.
+  out.version = 2;
+  int status = oboe_tracing_decisions(&in, &out);
 
   // set the message and auth info for both error and successful returns
   Napi::Object o = Napi::Object::New(env);
@@ -241,24 +231,12 @@ Napi::Value getTraceSettings(const Napi::CallbackInfo& info) {
   o.Set("authMessage", Napi::String::New(env, out.auth_message));
   o.Set("typeProvisioned", Napi::Number::New(env, out.request_provisioned));
 
-  // status > 0 is an error return; do no additional processing.
+  // do no additional processing.
   if (status > 0) {
     return o;
   }
 
-  // now we have oboe_metadata_t either from a supplied xtrace id or from
-  // a Metadata object created for this span. set the sample bit to match
-  // the sample decision and create a JavaScript Metadata instance.
-  if (out.do_sample) {
-    omd.flags |= XTR_FLAGS_SAMPLED;
-  } else {
-    omd.flags &= ~XTR_FLAGS_SAMPLED;
-  }
-
   // augment the return object
-  o.Set("metadata", env.Null());
-  o.Set("metadataFromXtrace", Napi::Boolean::New(env, have_metadata));
-  //o.Set("status", Napi::Number::New(env, status));
   o.Set("edge", Napi::Boolean::New(env, edge));
   o.Set("doSample", Napi::Boolean::New(env, out.do_sample));
   o.Set("doMetrics", Napi::Boolean::New(env, out.do_metrics));
