@@ -63,6 +63,9 @@ void initializeOboeMd(oboe_metadata_t &md, Napi::Buffer<uint8_t> b) {
   md.flags = b[kOpIdBase + OBOE_MAX_OP_ID_LEN];
 }
 
+// node's floating point numbers can only represent up to this number as
+// an integer.
+#define MAX_SAFE_INTEGER (pow(2, 53) - 1)
 //
 // add KV pair
 //
@@ -76,8 +79,8 @@ int addKvPair(oboe_event_t* event, std::string key, Napi::Value value) {
   } else if (value.IsNumber()) {
     const double v = value.As<Napi::Number>();
 
-    // it it's within integer range add an integer
-    if (v > -(pow(2, 53) - 1) && v < pow(2, 53) -1) {
+    // if it's within integer range add an integer
+    if (v >= -MAX_SAFE_INTEGER && v <= MAX_SAFE_INTEGER) {
       status = oboe_event_add_info_int64(event, key.c_str(), v);
     } else {
       status = oboe_event_add_info_double(event, key.c_str(), v);
@@ -135,7 +138,6 @@ Napi::Value send(const Napi::CallbackInfo& info) {
   // will result in using the OBOE_SEND_STATUS channel.
   Napi::Object event = info[0].As<Napi::Object>();
   const int channel = info[1].ToBoolean().Value() ? OBOE_SEND_STATUS : OBOE_SEND_EVENT;
-  //bool useStatusChannel = info[1].ToBoolean().Value();
 
   if (!validEvent(event)) {
     Napi::TypeError::New(env, "Not a valid Event").ThrowAsJavaScriptException();
