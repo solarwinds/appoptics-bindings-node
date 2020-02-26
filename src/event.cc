@@ -87,13 +87,8 @@ int addKvPair(oboe_event_t* event, std::string key, Napi::Value value) {
     }
   } else if (value.IsString()) {
     std::string s = value.As<Napi::String>();
-
-    // make a stab at detecting binary data
-    if (memchr(s.c_str(), '\0', s.length())) {
-      status = oboe_event_add_info_binary(event, key.c_str(), s.c_str(), s.length());
-    } else {
-      status = oboe_event_add_info(event, key.c_str(), s.c_str());
-    }
+    // this isn't really binary, it's just a utf8 string.
+    status = oboe_event_add_info_binary(event, key.c_str(), s.c_str(), s.length());
   }
 
   return status;
