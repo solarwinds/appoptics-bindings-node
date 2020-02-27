@@ -80,11 +80,10 @@ int addKvPair(oboe_event_t* event, std::string key, Napi::Value value) {
   } else if (value.IsNumber()) {
     const double v = value.As<Napi::Number>();
     double v_int;
-    const double abs_v = std::abs(v);
 
     // if it has a fractional part or is outside the range of integer values
     // it's a double.
-    double v_frac = std::modf(abs_v, &v_int);
+    double v_frac = std::modf(v, &v_int);
     if (v_frac != 0 || v > MAX_SAFE_INTEGER || v < -MAX_SAFE_INTEGER) {
       status = oboe_event_add_info_double(event, key.c_str(), v);
     } else {
