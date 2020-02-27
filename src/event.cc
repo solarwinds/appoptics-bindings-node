@@ -66,6 +66,7 @@ void initializeOboeMd(oboe_metadata_t &md, Napi::Buffer<uint8_t> b) {
 // node's floating point numbers can only represent up to this number as
 // an integer.
 #define MAX_SAFE_INTEGER (pow(2, 53) - 1)
+
 //
 // add KV pair
 //
@@ -78,12 +79,16 @@ int addKvPair(oboe_event_t* event, std::string key, Napi::Value value) {
     status = oboe_event_add_info_bool(event, key.c_str(), value.As<Napi::Boolean>().Value());
   } else if (value.IsNumber()) {
     const double v = value.As<Napi::Number>();
+    double v_int;
+    const double abs_v = std::abs(v);
 
-    // if it's within integer range add an integer
-    if (v >= -MAX_SAFE_INTEGER && v <= MAX_SAFE_INTEGER) {
-      status = oboe_event_add_info_int64(event, key.c_str(), v);
-    } else {
+    // if it has a fractional part or is outside the range of integer values
+    // it's a double.
+    double v_frac = std::modf(abs_v, &v_int);
+    if (v_frac != 0 || v > MAX_SAFE_INTEGER || v < -MAX_SAFE_INTEGER) {
       status = oboe_event_add_info_double(event, key.c_str(), v);
+    } else {
+      status = oboe_event_add_info_int64(event, key.c_str(), v);
     }
   } else if (value.IsString()) {
     std::string s = value.As<Napi::String>();
