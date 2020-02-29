@@ -218,6 +218,7 @@ Napi::Value send(const Napi::CallbackInfo& info) {
   result.Set("bsonSize", bb_len);
 
   int send_status = oboe_raw_send(channel, oboe_event.bb_str, bb_len);
+  oboe_event_destroy(&oboe_event);
 
   if (send_status < (int)bb_len) {
     Napi::Object err = Napi::Object::New(env);
