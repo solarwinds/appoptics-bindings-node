@@ -6,13 +6,23 @@ const expect = require('chai').expect;
 
 const env = process.env;
 
+let test;
+if (env.APPOPTICS_REPORTER !== 'udp') {
+  test = it.skip;
+} else {
+  test = it;
+}
+
+const reporter = env.APPOPTICS_REPORTER;
+const endpoint = env.APPOPTICS_COLLECTOR;
+
 describe('reporter-metrics-memory', function () {
   const serviceKey = `${env.AO_TOKEN_PROD}:node-bindings-test`;
   const metrics = [];
   const batchSize = 100;
 
   before(function () {
-    const status = aob.oboeInit({serviceKey});
+    const status = aob.oboeInit({serviceKey, reporter, endpoint});
     // oboeInit can return -1 for already initialized or 0 if succeeded.
     // depending on whether this is run as part of a suite or standalone
     // either result is valid.
@@ -28,7 +38,7 @@ describe('reporter-metrics-memory', function () {
     }
   });
 
-  it('should sendMetric() without losing memory', function () {
+  test('should sendMetric() without losing memory', function () {
     this.timeout(20000);
     const warmup =  500000;
     const checkCount =  1000000;
@@ -87,7 +97,7 @@ describe('reporter-metrics-memory', function () {
       })
   })
 
-  it('should sendMetrics() without losing memory', function () {
+  test('should sendMetrics() without losing memory', function () {
     this.timeout(20000);
     const warmup = 500000;
     const checkCount = 1000000;
@@ -117,20 +127,20 @@ describe('reporter-metrics-memory', function () {
       .then(function () {
         // now see if the code loses memory. if it's less than 1 byte per iteration
         // then it's not losing memory for all practical purposes.
-        start2 = process.memoryUsage().rss + checkCount;
+        start2 = process.memoryUsage().rss;
         for (let i = checkCount; i > 0; i -= batchSize) {
           r.sendMetrics(metrics);
         }
         done2 = process.memoryUsage().rss;
-        gc(true);
       })
+      .then(() => gc(true))
       .then(wait)
       .then(function () {
         finish1 = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish1);
-        expect(finish1).lte(start2, `should execute ${checkCount} metrics with limited rss growth`);
-        gc(true);
+        expect(finish1 - start2).lte(checkCount, `should execute ${checkCount} metrics with limited rss growth`);
       })
+      .then(() => gc(true))
       .then(wait)
       .then(function () {
         for (let i = checkCount; i > 0; i -= batchSize) {
@@ -140,9 +150,9 @@ describe('reporter-metrics-memory', function () {
       })
       .then(wait)
       .then(function () {
-        const finish = process.memoryUsage().rss;
+        const finish2 = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish);
-        expect(finish).equal(finish1, 'rss should not change after first iteration');
+        expect(finish2 - finish1).lte(0, 'rss should not change after first iteration');
       })
   })
 })
