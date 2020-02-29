@@ -33,7 +33,7 @@ const totals = m1 => `r ${commas(m1.rss)}; x ${commas(m1.external)}; m ${commas(
 
 const singleBuf = makeMetabuf();
 
-describe('reporter-metrics-memory', function () {
+describe('event-memory', function () {
   const serviceKey = `${env.AO_TOKEN_PROD}:node-bindings-test`;
 
   before(function () {
