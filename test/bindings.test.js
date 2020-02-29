@@ -6,6 +6,16 @@ const expect = require('chai').expect;
 const EnvVarOptions = require('./lib/env-var-options');
 const keyMap = require('./lib/env-var-key-map');
 
+const env = process.env;
+
+if (env.APPOPTICS_REPORTER === 'udp' && !(env.APPOPTICS_COLLECTOR || '').startsWith('localhost')) {
+  throw new Error(`REPORTER = ${env.APPOPTICS_REPORTER} but collector is not localhost`);
+}
+
+if (!env.APPOPTICS_SERVICE_KEY) {
+  throw new Error('Missing SERVICE_KEY');
+}
+
 //
 // goodOptions are used in multiple tests so they're declared here
 //
