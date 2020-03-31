@@ -1,6 +1,7 @@
 #include "bindings.h"
 #include <cmath>
 #include <iomanip>
+#include <chrono>
 
 //
 // return true if the object meets our expectations of what an Event should be
@@ -126,6 +127,8 @@ int addEdge(oboe_event_t* event, Napi::Value edge) {
 // by the JavaScript Event class so minimal checking is required.
 //
 Napi::Value send(const Napi::CallbackInfo& info) {
+  using namespace std::chrono;
+
   Napi::Env env = info.Env();
 
   if (info.Length() < 1 || !info[0].IsObject()) {
@@ -133,6 +136,7 @@ Napi::Value send(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
+  //high_resolution_clock::time_point t1 = high_resolution_clock::now();
   // the default is to use the OBOE_SEND_EVENT channel. A truthy second argument
   // will result in using the OBOE_SEND_STATUS channel.
   Napi::Object event = info[0].As<Napi::Object>();
@@ -142,6 +146,9 @@ Napi::Value send(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "Not a valid Event").ThrowAsJavaScriptException();
     return env.Null();
   }
+  //high_resolution_clock::time_point t2 = high_resolution_clock::now();
+  //duration<double> validateDelta = t2 - t1;
+  //t1 = t2;
 
   // return a results object.
   Napi::Object result = Napi::Object::New(env);
@@ -158,12 +165,22 @@ Napi::Value send(const Napi::CallbackInfo& info) {
   // return any errors in this array.
   Napi::Array errors = Napi::Array::New(env);
 
+  //t2 = high_resolution_clock::now();
+  //duration<double> getEventObjectsDelta = t2 - t1;
+  //t1 = t2;
+
   oboe_metadata_t oboe_md;
   oboe_event_t oboe_event;
 
   initializeOboeMd(oboe_md, buf);
 
   oboe_event_init(&oboe_event, &oboe_md, const_cast<const uint8_t*>(oboe_md.ids.op_id));
+  //t2 = high_resolution_clock::now();
+  //duration<double> eventInitDelta = t2 - t1;
+  //t1 = t2;
+
+  int kvCount = 0;
+  int kvErrors = 0;
 
   // add the KV pairs
   Napi::Array kvKeys = kvs.GetPropertyNames();
@@ -172,7 +189,10 @@ Napi::Value send(const Napi::CallbackInfo& info) {
     Napi::Value v = kvKeys[i];
     std::string key = v.ToString();
     int status = addKvPair(&oboe_event, key, kvs.Get(key));
-    if (status != 0) {
+    if (status == 0) {
+      kvCount += 1;
+    } else {
+      kvErrors += 1;
       Napi::Object err = Napi::Object::New(env);
       err.Set("error", "kv send failed");
       err.Set("key", key);
@@ -181,6 +201,12 @@ Napi::Value send(const Napi::CallbackInfo& info) {
       scope.Escape(err);
     }
   }
+  //t2 = high_resolution_clock::now();
+  //duration<double> kvProcessingDelta = t2 - t1;
+  //t1 = t2;
+
+  int edgeCount = 0;
+  int edgeErrors = 0;
 
   // add edges
   Napi::Array edgeIndexes = edges.GetPropertyNames();
@@ -189,7 +215,10 @@ Napi::Value send(const Napi::CallbackInfo& info) {
     Napi::Value v = edgeIndexes[i];
     std::string index = v.ToString();
     int status = addEdge(&oboe_event, edges.Get(index));
-    if (status != 0) {
+    if (status == 0) {
+      edgeCount += 1;
+    } else {
+      edgeErrors += 1;
       Napi::Object err = Napi::Object::New(env);
       err.Set("error", "add edge failed");
       err.Set("edgeIndex", i);
@@ -197,6 +226,9 @@ Napi::Value send(const Napi::CallbackInfo& info) {
       scope.Escape(err);
     }
   }
+  //t2 = high_resolution_clock::now();
+  //duration<double> edgeProcessingDelta = t2 - t1;
+  //t1 = t2;
 
   int status = oboe_event_add_hostname(&oboe_event);
   if (status != 0) {
@@ -217,8 +249,16 @@ Napi::Value send(const Napi::CallbackInfo& info) {
   size_t bb_len = (size_t)(oboe_event.bbuf.cur - oboe_event.bbuf.buf);
   result.Set("bsonSize", bb_len);
 
+  //t2 = high_resolution_clock::now();
+  //duration<double> finishDelta = t2 - t1;
+  //t1 = t2;
+
   int send_status = oboe_raw_send(channel, oboe_event.bb_str, bb_len);
   oboe_event_destroy(&oboe_event);
+
+  //t2 = high_resolution_clock::now();
+  //duration<double> sendDelta = t2 - t1;
+  //t1 = t2;
 
   if (send_status < (int)bb_len) {
     Napi::Object err = Napi::Object::New(env);
@@ -231,6 +271,24 @@ Napi::Value send(const Napi::CallbackInfo& info) {
   result.Set("status", errors.Length() == 0);
   result.Set("errors", errors);
   result.Set("channel", channel);
+
+  result.Set("kvCount", kvCount);
+  result.Set("kvErrors", kvErrors);
+  result.Set("edgeCount", edgeCount);
+  result.Set("edgeErrors", edgeErrors);
+
+  // report all these as milliseconds
+  //result.Set("validateDelta", validateDelta.count() * 1000);
+  //result.Set("getEventObjectsDelta", getEventObjectsDelta.count() * 1000);
+  //result.Set("eventInitDelta", eventInitDelta.count() * 1000);
+  //result.Set("kvProcessingDelta", kvProcessingDelta.count() * 1000);
+  //result.Set("edgeProcessingDelta", edgeProcessingDelta.count() * 1000);
+  //result.Set("finishDelta", finishDelta.count() * 1000);
+  //result.Set("sendDelta", sendDelta.count() * 1000);
+
+  //t2 = high_resolution_clock::now();
+  //duration<double> final = t2 - t1;
+  //result.Set("finalDelta", final.count() * 1000);
 
   return result;
 }
