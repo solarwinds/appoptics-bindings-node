@@ -30,7 +30,7 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
 
     // setup oboe's options structure
     oboe_init_options_t options;
-    options.version = 9;
+    options.version = 10;
 
     int setDefaultsStatus = oboe_init_options_set_defaults(&options);
     if (setDefaultsStatus > 0) {
@@ -205,6 +205,16 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
         valid.Set("proxy", proxy);
         holdKeys[++kix] = proxy.ToString();
         options.proxy = holdKeys[kix].c_str();
+      }
+    }
+    // lambda additions
+    if (o.Has("serviceName")) {
+      Napi::Value serviceName = o.Get("serviceName");
+      processed.Set("serviceName", serviceName);
+      if (serviceName.IsString()) {
+        valid.Set("service", serviceName);
+        holdKeys[++kix] = serviceName.ToString();
+        options.lambda_service_name = holdKeys[kix].c_str();
       }
     }
 

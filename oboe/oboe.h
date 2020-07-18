@@ -103,6 +103,7 @@ extern "C" {
 #define OBOE_REPORTER_PROTOCOL_UDP "udp"
 #define OBOE_REPORTER_PROTOCOL_SSL "ssl"
 #define OBOE_REPORTER_PROTOCOL_NULL "null"
+#define OBOE_REPORTER_PROTOCOL_LAMBDA "lambda"
 
 /** Maximum reasonable length of an arguments string for configuring a reporter. */
 #define OBOE_REPORTER_ARGS_SIZE 4000
@@ -183,6 +184,9 @@ typedef struct oboe_init_options {
 
     int ec2_metadata_timeout;               // EC2 metadata timeout in milliseconds
     const char *proxy;                      // HTTP proxy address and port to be used for the gRPC connection
+
+    // v10
+    const char *lambda_service_name;        // service name portion of the service key, used by lambda reporter (v10)
 } oboe_init_options_t;
 
 typedef struct oboe_span_params {
@@ -239,6 +243,11 @@ typedef struct oboe_internal_stats {
     int collector_response_try_later;
     int collector_response_limit_exceeded;
 } oboe_internal_stats_t;
+
+typedef struct oboe_reporter_request_properties {
+    int version;
+    const char *lambda_request_id;
+} oboe_reporter_request_properties;
 
 #define OBOE_SPAN_PARAMS_VERSION 2              // version of oboe_span_params_t
 #define OBOE_TRANSACTION_NAME_MAX_LENGTH 255    // max allowed length for transaction name
@@ -330,6 +339,8 @@ typedef int (*reporter_destroy)(void *);
 typedef int (*reporter_server_response)(void *);
 typedef const char* (*reporter_server_warning)(void *);
 typedef int (*reporter_profiling_interval)(void *);
+typedef void (*reporter_flush)(void *);
+typedef void (*reporter_set_request_properties)(void *, oboe_reporter_request_properties *properties);
 typedef struct oboe_reporter {
     void *              descriptor;     /*!< Reporter's context. */
     reporter_ready      eventReady;     /*!< Check if the reporter is ready for another trace. */
@@ -346,6 +357,8 @@ typedef struct oboe_reporter {
     reporter_server_response getServerResponse;
     reporter_profiling_interval profilingInterval;
     reporter_server_warning getServerWarning;
+    reporter_flush flush;
+    reporter_set_request_properties setRequestProperties;
 } oboe_reporter_t;
 
 /**
@@ -420,6 +433,21 @@ void oboe_reporter_disconnect();    /* TODO: Need implementation. */
 void oboe_reporter_reconnect();     /* TODO: Need implementation. */
 
 /**
+ * tell reporter to flush all messages that are currently buffered
+ */
+void oboe_reporter_flush();
+
+/**
+ * get the reporter type used
+ */
+const char* oboe_get_reporter_type();
+
+/**
+ * set request properties
+ */
+void oboe_reporter_set_request_properties(oboe_reporter_request_properties *properties);
+
+/**
  * Check if oboe is ready
  *
  * Ready means reporters are ready and settings have been received
@@ -489,10 +517,6 @@ void oboe_shutdown();
 #define OBOE_TRACE_ALWAYS  1    // deprecated: do not use, only here for backward compatibility
 #define OBOE_TRACE_DISABLED   0
 #define OBOE_TRACE_ENABLED  1
-
-#if defined _WIN32
-    #pragma pack(push, 1)
-#endif
 
 #define OBOE_SEND_EVENT 0
 #define OBOE_SEND_STATUS 1
@@ -569,6 +593,7 @@ const char* oboe_get_tracing_decisions_auth_message (int code);
 #define OBOE_INIT_SSL_CONFIG_AUTH 8
 #define OBOE_INIT_SSL_LOAD_CERT 9
 #define OBOE_INIT_SSL_REPORTER_CREATE 10
+#define OBOE_INIT_SSL_MISSING_KEY 11
 
 //
 // these codes are returned by oboe_notifier_status()

@@ -463,6 +463,23 @@ Napi::Value sendMetric (const Napi::CallbackInfo& info) {
 }
 
 //
+// lambda additions
+//
+Napi::Value flush (Napi::Env env, Napi::CallbackInfo& info) {
+  oboe_reporter_flush();
+  // hopefully reporter will return errors in the future
+  return env.Undefined();
+}
+
+Napi::Value getType (Napi::Env env, Napi::CallbackInfo& info) {
+  const char* type = oboe_get_reporter_type();
+  if (!type) {
+    return env.Undefined();
+  }
+  return Napi::String::New(env, type);
+}
+
+//
 // Initialize the module.
 //
 namespace Reporter {
