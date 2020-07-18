@@ -1,3 +1,23 @@
+## 10.1.0 lambda
+
+1. read env var APPOPTICS_SERVICE_NAME and pass to oboe_init() (set
+lambda_service_name). Lambda doesn't need the key portion, just the name
+portion of the  APM service key. service name is portion of service key
+after ":". must use version 10 of oboe_init_options_t for the lambda_service_name
+to be recognized.
+2. empty service key is now allowed for oboe_init() in case of lambda (for ssl
+reporter, indicated by error code OBOE_INIT_SSL_MISSING_KEY)
+3. on agent startup if env var APPOPTICS_SAMPLE_RATE is set, use it to set local
+sample rate with oboe_settings_rate_set(). this is needed because oboe receives
+no messages from the collector.
+4. get awsRequestId and pass into oboe via oboe_reporter_set_request_properties()
+(https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html). This needs to
+happen before calling  oboe_reporter_flush()
+5. call oboe_reporter_flush() when done handling request (after sending exit
+event). can call oboe_get_reporter_type() to get type of reporter if desired.
+
+## 6.0.0
+
 1. use N-API (don't need to compile for supported environments)
 2. remove all friend classes
 3. convert classes with only static methods to namespaces.
