@@ -465,13 +465,14 @@ Napi::Value sendMetric (const Napi::CallbackInfo& info) {
 //
 // lambda additions
 //
-Napi::Value flush (Napi::Env env, Napi::CallbackInfo& info) {
+Napi::Value flush (const Napi::CallbackInfo& info) {
   oboe_reporter_flush();
   // hopefully reporter will return errors in the future
-  return env.Undefined();
+  return info.Env().Undefined();
 }
 
-Napi::Value getType (Napi::Env env, Napi::CallbackInfo& info) {
+Napi::Value getType (const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   const char* type = oboe_get_reporter_type();
   if (!type) {
     return env.Undefined();
@@ -494,6 +495,9 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
   module.Set("sendMetric", Napi::Function::New(env, sendMetric));
   module.Set("sendMetrics", Napi::Function::New(env, sendMetrics));
+
+  module.Set("flush", Napi::Function::New(env, flush));
+  module.Set("getType", Napi::Function::New(env, getType));
 
   exports.Set("Reporter", module);
 
