@@ -465,6 +465,44 @@ Napi::Value sendMetric (const Napi::CallbackInfo& info) {
 //
 // lambda additions
 //
+
+// sets the request properties. it's really lambda-specific as
+// there is no context associated with the call so there if there
+// are multiple requests active there is no way to associate this
+// call with a specific request.
+Napi::Value setRequestProperties(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  int validCount = 0;
+
+  oboe_reporter_request_properties req_props;
+  req_props.version = 0;
+
+  // check args
+  if (info.Length() == 0 || !info[0].IsObject() || info[0].IsArray()) {
+    Napi::TypeError::New(env, "argument must be a plain object")
+        .ThrowAsJavaScriptException();
+    return env.Undefined();
+  }
+  Napi::Object o = info[0].ToObject();
+
+  std::string requestId = "";
+
+  if (o.Has("lambdaRequestId") && o.Get("lambdaRequestId").IsString()) {
+    requestId = o.Get("lambdaRequestId").As<Napi::String>();
+    req_props.lambda_request_id = requestId.c_str();
+    validCount += 1;
+  } else {
+    req_props.lambda_request_id = NULL;
+  }
+
+  if (validCount != 0) {
+    oboe_reporter_set_request_properties(&req_props);
+  }
+
+  return Napi::Number::New(env, validCount);
+}
+
 Napi::Value flush (const Napi::CallbackInfo& info) {
   oboe_reporter_flush();
   // hopefully reporter will return errors in the future
@@ -496,6 +534,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   module.Set("sendMetric", Napi::Function::New(env, sendMetric));
   module.Set("sendMetrics", Napi::Function::New(env, sendMetrics));
 
+  module.Set("setRequestProperties", Napi::Function::New(env, setRequestProperties));
   module.Set("flush", Napi::Function::New(env, flush));
   module.Set("getType", Napi::Function::New(env, getType));
 
