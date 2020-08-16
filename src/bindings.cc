@@ -207,16 +207,6 @@ Napi::Value oboeInit(const Napi::CallbackInfo& info) {
         options.proxy = holdKeys[kix].c_str();
       }
     }
-    // lambda additions
-    if (o.Has("serviceName")) {
-      Napi::Value serviceName = o.Get("serviceName");
-      processed.Set("serviceName", serviceName);
-      if (serviceName.IsString()) {
-        valid.Set("service", serviceName);
-        holdKeys[++kix] = serviceName.ToString();
-        options.lambda_service_name = holdKeys[kix].c_str();
-      }
-    }
 
     if (skipInit) {
       return env.Null();

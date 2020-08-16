@@ -171,7 +171,7 @@ typedef struct oboe_init_options {
     int events_flush_interval;              // events flush timeout in seconds (threshold for batching messages before sending off)
     int max_request_size_bytes;             // limit max RPC request size
 
-    const char *reporter;                   // the reporter to be used (ssl, upd, file, null)
+    const char *reporter;                   // the reporter to be used (ssl, upd, file, null, lambda)
     const char *host;                       // collector endpoint (reporter=ssl), udp address (reporter=udp), or file path (reporter=file)
     const char *service_key;                // the service key
     const char *trusted_path;               // path to the SSL certificate (only for ssl)
@@ -184,9 +184,6 @@ typedef struct oboe_init_options {
 
     int ec2_metadata_timeout;               // EC2 metadata timeout in milliseconds
     const char *proxy;                      // HTTP proxy address and port to be used for the gRPC connection
-
-    // v10
-    const char *lambda_service_name;        // service name portion of the service key, used by lambda reporter (v10)
 } oboe_init_options_t;
 
 typedef struct oboe_span_params {
@@ -243,11 +240,6 @@ typedef struct oboe_internal_stats {
     int collector_response_try_later;
     int collector_response_limit_exceeded;
 } oboe_internal_stats_t;
-
-typedef struct oboe_reporter_request_properties {
-    int version;
-    const char *lambda_request_id;
-} oboe_reporter_request_properties;
 
 #define OBOE_SPAN_PARAMS_VERSION 2              // version of oboe_span_params_t
 #define OBOE_TRANSACTION_NAME_MAX_LENGTH 255    // max allowed length for transaction name
@@ -340,7 +332,6 @@ typedef int (*reporter_server_response)(void *);
 typedef const char* (*reporter_server_warning)(void *);
 typedef int (*reporter_profiling_interval)(void *);
 typedef void (*reporter_flush)(void *);
-typedef void (*reporter_set_request_properties)(void *, oboe_reporter_request_properties *properties);
 typedef struct oboe_reporter {
     void *              descriptor;     /*!< Reporter's context. */
     reporter_ready      eventReady;     /*!< Check if the reporter is ready for another trace. */
@@ -358,7 +349,6 @@ typedef struct oboe_reporter {
     reporter_profiling_interval profilingInterval;
     reporter_server_warning getServerWarning;
     reporter_flush flush;
-    reporter_set_request_properties setRequestProperties;
 } oboe_reporter_t;
 
 /**
@@ -441,11 +431,6 @@ void oboe_reporter_flush();
  * get the reporter type used
  */
 const char* oboe_get_reporter_type();
-
-/**
- * set request properties
- */
-void oboe_reporter_set_request_properties(oboe_reporter_request_properties *properties);
 
 /**
  * Check if oboe is ready

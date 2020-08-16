@@ -15,6 +15,9 @@ no messages from the collector.
 happen before calling  oboe_reporter_flush()
 5. call oboe_reporter_flush() when done handling request (after sending exit
 event). can call oboe_get_reporter_type() to get type of reporter if desired.
+6. remove 1 and 4 for oboe changes
+
+- oboe lambda detection both AWS_LAMBDA_FUNCTION_NAME and LAMBDA_TASK_ROOT in env.
 
 ## 6.0.0
 
