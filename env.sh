@@ -124,7 +124,7 @@ get_new_oboe() {
     # them to be, so fix the directories up by making the 'include'
     # directory go away.
     #
-    for f in VERSION \
+    for f in VERSION ChangeLog \
         include/oboe.h include/oboe_debug.h \
         include/bson/bson.h include/bson/platform_hacks.h
     do
