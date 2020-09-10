@@ -10,19 +10,27 @@ SOURCE=${SOURCE:-PRODUCTION}
 #a="/$0"; a=${a%/*}; a=${a#/}; a=${a:-.}; BASEDIR=$(cd "$a"; pwd)
 #echo $BASEDIR
 
-Which=$(which ${0#-})
-if [ "$Which" != "/bin/sh" -a "$Which" != "/bin/bash" ]; then
-    # it's kind of kludgy but all args that involve oboe contain the string
-    # "oboe-version". so if the command doesn't contain oboe-version it must
-    # be sourced
-    if test "${ARG#*oboe-version}" = "$ARG" ; then
-        echo "this script must be sourced so the environment variables can be set."
-        echo "only the '*-oboe-version' commands work correctly when the script is"
-        echo "executed and not sourced."
-        /bin/false
-        return
-    fi
-fi
+Which=$(which "${0#-}")
+
+case $Which in
+    */bin/sh)
+    ;;
+    */bin/bash)
+    ;;
+
+    *)
+        # it's kind of kludgy but all args that involve oboe contain the string
+        # "oboe-version". so if the command doesn't contain oboe-version it must
+        # be sourced
+        if test "${ARG#*oboe-version}" = "$ARG" ; then
+            echo "this script must be sourced so the environment variables can be set."
+            echo "only the '*-oboe-version' commands work correctly when the script is"
+            echo "executed and not sourced."
+            /bin/false
+            return
+        fi
+    ;;
+esac
 
 # define this in all cases.
 if [ "$ARG" = "stg" ]; then
@@ -49,9 +57,9 @@ get_new_oboe() {
         echo "$ SOURCE=STAGING . env.sh install-oboe-version 6.0.0"
         return
     fi
-    if [ $(which wget) ]; then
+    if [ "$(which wget)" ]; then
         downloader="wget -q -O"
-    elif [ $(which curl) ]; then
+    elif [ "$(which curl)" ]; then
         downloader="curl -o"
     else
         echo "Neither wget nor curl is available, aborting"
@@ -90,9 +98,9 @@ get_new_oboe() {
     for f in $PAIRS
     do
         if [ -n "$PRETEND" ]; then
-            echo pretending to download $URL$f to ./oboe-$PARAM/${f}
+            echo pretending to download "$URL$f" to "./oboe-$PARAM/${f}"
         else
-            echo downloading $URL$f to ./oboe-$PARAM/${f}}
+            echo downloading "$URL$f" to ./oboe-$PARAM/${f}}
             $downloader "./oboe-$PARAM/${f}" "${URL}$f"
             $downloader "./oboe-$PARAM/${f}.sha256" "${URL}$f.sha256"
         fi
@@ -102,7 +110,7 @@ get_new_oboe() {
         checked=`sha256sum "./oboe-$PARAM/$f" | awk '{print $1}'`
         if [ "$checked" != "$correct" -o "$checked" = "" -o "$correct" = "" ]; then
             if [ "$PRETEND" = "" ]; then
-              ERRORS=`expr $ERRORS + 1`
+              ERRORS=$(expr $ERRORS + 1)
               ERRORFILES="$ERRORFILES $f"
               echo "WARNING: SHA256 for $f DOES NOT MATCH!"
               echo "found    ${checked:-nothing}"
@@ -113,7 +121,7 @@ get_new_oboe() {
         fi
     done
 
-    if [ $ERRORS -gt 0 -a "$ERRORFILES" != "$OKMISSING" ]; then
+    if [ "$ERRORS" -gt 0 ] && [ "$ERRORFILES" != "$OKMISSING" ]; then
         echo "$ERRORS SHA mismatches:$ERRORFILES"
         return 1
     fi
@@ -139,12 +147,12 @@ get_new_oboe() {
     done
 
     # expand the zip files if they were downloaded
-    for f in ./oboe-$PARAM/*.gz
+    for f in "./oboe-$PARAM/"*.gz
     do
         # make this work with/without the static library .gz files
         [ -e "$f" ] || break
         # consider adding '.a' extension?
-        gunzip $f
+        gunzip "$f"
     done
 
     return 0
@@ -177,20 +185,18 @@ elif [ "$ARG" = "fetch-oboe-version" ]; then
 elif [ "$ARG" = "install-local-oboe-version" ]; then
     # promote a downloaded version to the production
     # directory 'oboe'
-    if [ ! -d oboe-$PARAM ]; then
+    if [ ! -d "oboe-$PARAM" ]; then
         echo "Can't find directory ./oboe-$PARAM"
     else
         # counts on oboe-$PARAM having the correct files
         rm -rf oboe
-        cp -r oboe-$PARAM oboe
+        cp -r "oboe-$PARAM" oboe
     fi
 
 elif [ "$ARG" = "install-oboe-version" ]; then
     # this downloads the new oboe AND moves it to
     # the oboe directory, elevating it to production.
-    get_new_oboe
-
-    if [ $? -ne "0" ]; then
+    if get_new_oboe; then
         echo "failed to download files"
         /bin/false
         return
@@ -200,7 +206,7 @@ elif [ "$ARG" = "install-oboe-version" ]; then
     rm -rf oboe
 
     # move the new one over
-    mv oboe-$PARAM oboe
+    mv "oboe-$PARAM" oboe
 
     [ -n "$PRETEND" ] && echo "PRETEND THAT"
     echo "a new version of oboe ($PARAM) has been placed in the oboe directory"
