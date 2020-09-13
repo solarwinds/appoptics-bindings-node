@@ -466,9 +466,9 @@ Napi::Value sendMetric (const Napi::CallbackInfo& info) {
 // lambda additions
 //
 Napi::Value flush (const Napi::CallbackInfo& info) {
-  oboe_reporter_flush();
-  // hopefully reporter will return errors in the future
-  return info.Env().Undefined();
+  int status = oboe_reporter_flush();
+  // {OK: 0, TOO_BIG: 1, BAD_UTF8: 2, NO_REPORTER: 3, NOT_READY: 4}
+  return Napi::Number::New(info.Env(), status);
 }
 
 Napi::Value getType (const Napi::CallbackInfo& info) {
