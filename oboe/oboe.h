@@ -178,8 +178,8 @@ typedef struct oboe_init_options {
     int buffer_size;                        // size of the message buffer
     int trace_metrics;                      // flag indicating if trace metrics reporting should be enabled (default) or disabled
     int histogram_precision;                // the histogram precision (only for ssl)
-    int token_bucket_capacity;              // custom token bucket capacity
-    int token_bucket_rate;                  // custom token bucket rate
+    double token_bucket_capacity;           // custom token bucket capacity
+    double token_bucket_rate;               // custom token bucket rate
     int file_single;                        // use single files in file reporter for each event
 
     int ec2_metadata_timeout;               // EC2 metadata timeout in milliseconds
@@ -331,7 +331,7 @@ typedef int (*reporter_destroy)(void *);
 typedef int (*reporter_server_response)(void *);
 typedef const char* (*reporter_server_warning)(void *);
 typedef int (*reporter_profiling_interval)(void *);
-typedef void (*reporter_flush)(void *);
+typedef int (*reporter_flush)(void *);
 typedef struct oboe_reporter {
     void *              descriptor;     /*!< Reporter's context. */
     reporter_ready      eventReady;     /*!< Check if the reporter is ready for another trace. */
@@ -425,12 +425,17 @@ void oboe_reporter_reconnect();     /* TODO: Need implementation. */
 /**
  * tell reporter to flush all messages that are currently buffered
  */
-void oboe_reporter_flush();
+int oboe_reporter_flush();
 
 /**
  * get the reporter type used
  */
 const char* oboe_get_reporter_type();
+
+/**
+ * Check if system is AWS Lambda
+ */
+int oboe_is_lambda();
 
 /**
  * Check if oboe is ready
@@ -618,6 +623,15 @@ const char* oboe_get_tracing_decisions_auth_message (int code);
 #define OBOE_CUSTOM_METRICS_TAG_LIMIT_EXCEEDED 3
 #define OBOE_CUSTOM_METRICS_STOPPING 4
 #define OBOE_CUSTOM_METRICS_QUEUE_LIMIT_EXCEEDED 5
+
+//
+// these codes are returned by oboe_reporter_flush()
+//
+#define OBOE_REPORTER_FLUSH_OK 0
+#define OBOE_REPORTER_FLUSH_METRIC_TOO_BIG 1
+#define OBOE_REPORTER_FLUSH_BAD_UTF8 2
+#define OBOE_REPORTER_FLUSH_NO_REPORTER 3
+#define OBOE_REPORTER_FLUSH_REPORTER_NOT_READY 4
 
 // token buckets
 enum TOKEN_BUCKETS {
