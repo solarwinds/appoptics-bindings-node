@@ -196,7 +196,7 @@ elif [ "$ARG" = "install-local-oboe-version" ]; then
 elif [ "$ARG" = "install-oboe-version" ]; then
     # this downloads the new oboe AND moves it to
     # the oboe directory, elevating it to production.
-    if get_new_oboe; then
+    if ! get_new_oboe; then
         echo "failed to download files"
         /bin/false
         return
