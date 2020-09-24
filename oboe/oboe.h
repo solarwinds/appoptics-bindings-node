@@ -230,6 +230,10 @@ typedef struct oboe_tracing_decisions_out {
     int auth_status;
     const char *auth_message;
     const char *status_message;
+
+    // v3
+    double token_bucket_rate;
+    double token_bucket_capacity;
 } oboe_tracing_decisions_out_t;
 
 typedef struct oboe_internal_stats {
