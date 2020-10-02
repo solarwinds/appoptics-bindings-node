@@ -1,5 +1,3 @@
-'use strict';
-
 if (process.env.NODE_ENV !== 'production') {
   try {
     const segvHandler = require('segfault-handler');
