@@ -67,7 +67,7 @@ get_new_oboe() {
     fi
     # pretend to download for testing by adding any extra parameter
     PRETEND=$PARAM2
-    PAIRS="liboboe-1.0-x86_64.so.0.0.0  liboboe-1.0-alpine-x86_64.so.0.0.0"
+    PAIRS="liboboe-1.0-x86_64.so.0.0.0  liboboe-1.0-alpine-x86_64.so.0.0.0 liboboe-1.0-lambda-x86_64.so.0.0.0"
     # add the libressl version if we are using it again.
     # PAIRS="$PAIRS liboboe-1.0-alpine-libressl-x86_64.so.0.0.0"
     # a short window of oboe versions don't have multiple versions for alpine.
@@ -100,17 +100,17 @@ get_new_oboe() {
         if [ -n "$PRETEND" ]; then
             echo pretending to download "$URL$f" to "./oboe-$PARAM/${f}"
         else
-            echo downloading "$URL$f" to ./oboe-$PARAM/${f}}
+            echo downloading "$URL$f" to "./oboe-$PARAM/${f}"
             $downloader "./oboe-$PARAM/${f}" "${URL}$f"
             $downloader "./oboe-$PARAM/${f}.sha256" "${URL}$f.sha256"
         fi
 
         # check each sha256
-        correct=`cat "./oboe-$PARAM/$f.sha256" | awk '{print $1}'`
-        checked=`sha256sum "./oboe-$PARAM/$f" | awk '{print $1}'`
-        if [ "$checked" != "$correct" -o "$checked" = "" -o "$correct" = "" ]; then
+        correct=$(awk '{print $1}' < "./oboe-$PARAM/$f.sha256")
+        checked=$(sha256sum "./oboe-$PARAM/$f" | awk '{print $1}')
+        if [ "$checked" != "$correct" ] || [ "$checked" = "" ] || [ "$correct" = "" ]; then
             if [ "$PRETEND" = "" ]; then
-              ERRORS=$(expr $ERRORS + 1)
+              ERRORS=$((ERRORS + 1))
               ERRORFILES="$ERRORFILES $f"
               echo "WARNING: SHA256 for $f DOES NOT MATCH!"
               echo "found    ${checked:-nothing}"
@@ -137,11 +137,11 @@ get_new_oboe() {
         include/bson/bson.h include/bson/platform_hacks.h
     do
         if [ -n "$PRETEND" ]; then
-            echo pretending to download $f to ./oboe-$PARAM/${f#include/}
+            echo pretending to download $f to "./oboe-$PARAM/${f#include/}"
         else
-            echo downloading $f as ./oboe-$PARAM/${f#include/}
+            echo downloading $f as "./oboe-$PARAM/${f#include/}"
             # wget has no --create-dirs, so brute force directory creation
-            mkdir -p $(dirname "./oboe-$PARAM/${f#include/}")
+            mkdir -p "$(dirname "./oboe-$PARAM/${f#include/}")"
             $downloader "./oboe-$PARAM/${f#include/}" "${URL}$f"
         fi
     done
@@ -189,8 +189,11 @@ elif [ "$ARG" = "install-local-oboe-version" ]; then
         echo "Can't find directory ./oboe-$PARAM"
     else
         # counts on oboe-$PARAM having the correct files
+        echo "rm -rf oboe"
         rm -rf oboe
+        echo "cp -r oboe-$PARAM oboe"
         cp -r "oboe-$PARAM" oboe
+        echo "[done]"
     fi
 
 elif [ "$ARG" = "install-oboe-version" ]; then
