@@ -1048,16 +1048,6 @@ extern int oboe_config_get_revision();
  */
 const char* oboe_config_get_version_string();
 
-/*
- * Generate UUID for RUM
- *
- * @param access_key User Access Key
- * @param uuid_length Size of the UUID to generate
- * @param digest Pointer to array where the digest value gets stored
- * @param dlen Number of bytes of data stored
- */
-void oboe_rum_create_digest(const char* access_key, unsigned int uuid_length, unsigned char* digest, unsigned int *dlen);
-
 // Span reporting
 
 /*
