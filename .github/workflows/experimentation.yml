@@ -20,3 +20,5 @@ jobs:
         run: npx envinfo
       - name: verify install works
         run: npm install
+      - name: get core tests working
+        run: . env.sh prod && npm test
