@@ -18,3 +18,5 @@ jobs:
           node-version: ${{matrix.node-version}}
       - name: Environment Information
         run: npx envinfo
+      - name: verify install works
+        run: npm install
