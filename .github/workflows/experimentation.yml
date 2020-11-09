@@ -21,4 +21,8 @@ jobs:
       - name: verify install works
         run: npm install
       - name: get core tests working
-        run: . env.sh prod && npm test
+        run: npm test
+        env:
+          APPOPTICS_COLLECTOR: collector.appoptics.com
+          APPOPTICS_REPORTER: ssl
+          APPOPTICS_SERVICE_KEY: $AO_TOKEN_PROD:bindings-github-actions
