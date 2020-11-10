@@ -26,5 +26,3 @@ jobs:
         env:
           APPOPTICS_COLLECTOR: collector.appoptics.com
           APPOPTICS_REPORTER: ssl
-          APPOPTICS_SERVICE_KEY: $AO_TOKEN_PROD:bindings-github-actions
-          AO_TOKEN_PROD: $AO_TOKEN_PROD
