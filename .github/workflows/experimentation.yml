@@ -26,3 +26,4 @@ jobs:
         env:
           APPOPTICS_COLLECTOR: collector.appoptics.com
           APPOPTICS_REPORTER: ssl
+          AO_TOKEN_PROD: ${{ secrets.AO_TOKEN_PROD }}
