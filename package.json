@@ -12,7 +12,7 @@
   ],
   "main": "index.js",
   "gypfile": true,
-  "license": "SEE LICENSE IN https://docs.appoptics.com/kb/apm_tracing/librato-open-license/",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/appoptics/appoptics-bindings-node"
