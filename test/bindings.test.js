@@ -1,5 +1,3 @@
-'use strict';
-
 const bindings = require('../')
 const expect = require('chai').expect;
 
@@ -33,7 +31,7 @@ const goodOptions = {
   proxy: 'http://proxy-host:10101',
 }
 
-describe('addon.oboeInit()', function () {
+describe('bindings.oboeInit()', function () {
 
   it('should handle good options values', function () {
     const details = {};
@@ -127,7 +125,7 @@ describe('addon.oboeInit()', function () {
 
   it('should init without losing memory', function (done) {
     // node 8, 10 completes in < 30 seconds but node 12 takes longer
-    this.timeout(40000);
+    this.timeout(process.env.CI ? 100000 : 40000);
     const warmup = 1000000;
     const checkCount = 1000000;
     const options = Object.assign({}, goodOptions);

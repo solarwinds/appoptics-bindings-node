@@ -41,5 +41,3 @@ Event.makeFromString = function (string) {
 
   return Event.makeFromBuffer(b);
 }
-
-

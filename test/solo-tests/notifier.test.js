@@ -1,5 +1,3 @@
-'use strict';
-
 const net = require('net');
 const aob = require('../..')
 const expect = require('chai').expect;
@@ -10,8 +8,9 @@ const EventEmitter = require('events');
 //
 // goodOptions are used in multiple tests so they're declared here
 //
+const key = process.env.AO_TOKEN_PROD || process.env.AO_SWOKEN_PROD;
 const goodOptions = {
-  serviceKey: `${process.env.AO_SWOKEN_PROD}:node-oboe-notifier`,
+  serviceKey: `${key}:node-oboe-notifier`,
   traceMetrics: true,
 };
 
@@ -102,7 +101,7 @@ describe('addon.Notifier functions', function () {
 
   it('should receive an oboe config message', function (done) {
     const sk = goodOptions.serviceKey;
-    const keyLength = process.env.AO_SWOKEN_PROD.length;
+    const keyLength = key.length;
     const maskedKey = sk.slice(0, 4) + '...' + sk.slice(keyLength - 4);
     let counter = 0;
     const id = setInterval(function () {
@@ -190,7 +189,7 @@ describe('addon.Notifier functions', function () {
     }
 
     aob.Notifier.stop();
-    expect(aob.Notifier.status()).equal(-3, 'status should be shutting-down');
+    expect(aob.Notifier.status()).oneOf([-1, -3], 'status should be disabled or shutting-down');
 
     setTimeout(function () {
       expect(aob.Notifier.status()).equal(-1, 'status should be disabled');
