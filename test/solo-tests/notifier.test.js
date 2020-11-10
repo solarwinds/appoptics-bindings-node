@@ -8,7 +8,7 @@ const EventEmitter = require('events');
 //
 // goodOptions are used in multiple tests so they're declared here
 //
-const key = process.env.AO_SWOKEN_PROD || process.env.AO_TOKEN_PROD;
+const key = process.env.AO_TOKEN_PROD || process.env.AO_SWOKEN_PROD;
 const goodOptions = {
   serviceKey: `${key}:node-oboe-notifier`,
   traceMetrics: true,
@@ -138,6 +138,7 @@ describe('addon.Notifier functions', function () {
       if (messages.length) {
         clearInterval(id);
         const msg = messages.shift();
+        console.log(msg);
         expect(msg.seqNo).equal(2, 'should have a seqNo of 2');
         expect(msg.source).equal('collector');
         expect(msg.type).equal('remote-config', 'type should be remote-config');
