@@ -108,7 +108,6 @@ describe('addon.Notifier functions', function () {
       if (messages.length) {
         clearInterval(id);
         const msg = messages.shift();
-        console.log(msg);
         expect(msg.seqNo).equal(1, 'should have a seqNo of 1');
         expect(msg.source).equal('oboe', 'source didn\'t match');
         expect(msg.type).equal('config', 'oboe message should be type config');
@@ -139,7 +138,6 @@ describe('addon.Notifier functions', function () {
       if (messages.length) {
         clearInterval(id);
         const msg = messages.shift();
-        console.log(msg);
         expect(msg.seqNo).equal(2, 'should have a seqNo of 2');
         expect(msg.source).equal('collector');
         expect(msg.type).equal('remote-config', 'type should be remote-config');
