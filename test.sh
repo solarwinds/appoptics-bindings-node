@@ -5,11 +5,15 @@
 #
 mocha --expose-gc test/*.test.js
 
-error=$?
+[ $? ] && error=true
 
 #
 # run tests that requires new invocations of bindings
 #
 mocha test/solo-tests/notifier.test.js
 
-[ $? ] || [ $error ] && exit 1
+[ $? ] && error=true
+
+[ -n "$error" ] && exit 1
+
+exit 0
