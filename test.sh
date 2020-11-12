@@ -3,7 +3,7 @@
 #
 # run tests that can be run with one initialization of bindings.
 #
-mocha test/*.test.js
+mocha --expose-gc test/*.test.js
 
 error=$?
 
