@@ -151,13 +151,15 @@ describe('bindings.oboeInit()', function () {
 
     gc();
 
+    const delay = process.env.CI ? 1000 : 250;
+
     // give garbage collection a window to kick in.
     setTimeout(function () {
       const finish = process.memoryUsage().rss;
       expect(finish).lte(start2, `should execute ${checkCount} metrics without memory growth`);
       //console.log('s1', start1, 's2', start2 - checkCount, 'fin', finish);
       done()
-    }, 250)
+    }, delay);
 
     gc();
   })
