@@ -5,8 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     name: install bindings on alpine
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: install and test bindings
         id: alpine
