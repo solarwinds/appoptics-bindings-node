@@ -3,16 +3,16 @@
 #
 # run tests that can be run with one initialization of bindings.
 #
-mocha --expose-gc test/*.test.js
-
-[ $? ] && error=true
+if ! mocha --expose-gc test/*.test.js; then
+  error=true
+fi
 
 #
 # run tests that requires new invocations of bindings
 #
-mocha test/solo-tests/notifier.test.js
-
-[ $? ] && error=true
+if ! mocha test/solo-tests/notifier.test.js; then
+  error=true
+fi
 
 [ -n "$error" ] && exit 1
 
