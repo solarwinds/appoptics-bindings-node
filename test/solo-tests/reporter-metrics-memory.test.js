@@ -1,4 +1,4 @@
-const aob = require('../');
+const aob = require('../../');
 const r = aob.Reporter;
 const expect = require('chai').expect;
 
