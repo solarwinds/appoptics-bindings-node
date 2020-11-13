@@ -14,7 +14,7 @@ if ! mocha test/solo-tests/notifier.test.js; then
   error=true
 fi
 
-if ! mocha --expose-gc  test/solot-tests/init-memory.test.js; then
+if ! mocha --expose-gc  test/solo-tests/init-memory.test.js; then
   error=true
 fi
 
