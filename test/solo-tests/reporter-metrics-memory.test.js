@@ -30,6 +30,8 @@ describe('reporter-metrics-memory', function () {
     this.timeout(20000);
     const warmup =  500000;
     const checkCount =  1000000;
+    // if it's less than 1/10 of a byte per iteration it's good
+    const margin = process.env.CI ? checkCount / 10 : 0;
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;
 
@@ -81,7 +83,7 @@ describe('reporter-metrics-memory', function () {
       .then(function () {
         const finish = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish);
-        expect(finish).lte(finish1, 'rss should not change after first iteration');
+        expect(finish).lte(finish1 + margin, 'rss now show meaningful growth');
       })
   })
 
@@ -89,6 +91,8 @@ describe('reporter-metrics-memory', function () {
     this.timeout(20000);
     const warmup = 500000;
     const checkCount = 1000000;
+    // allowable margin
+    const margin = process.env.CI ? checkCount / 3 : 0;
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;
 
@@ -140,7 +144,7 @@ describe('reporter-metrics-memory', function () {
       .then(function () {
         const finish = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish);
-        expect(finish).lte(finish1, 'rss should not change after first iteration');
+        expect(finish).lte(finish1 + margin, 'rss should not show meaningful growth');
       })
   })
 })
