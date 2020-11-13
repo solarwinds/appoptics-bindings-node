@@ -34,7 +34,6 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "chai": "^4.2.0",
-    "segfault-handler": "^1.2.0"
+    "chai": "^4.2.0"
   }
 }

@@ -1,9 +1,3 @@
-if (process.env.NODE_ENV !== 'production') {
-  try {
-    const segvHandler = require('segfault-handler');
-    segvHandler.registerHandler('ao-segv.log');
-  } catch (e) {}
-}
 module.exports = require('bindings')('appoptics-bindings.node')
 module.exports.version = require('./package.json').version
 module.exports.init = function (sk) {
