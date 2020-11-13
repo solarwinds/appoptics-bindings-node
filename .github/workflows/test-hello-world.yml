@@ -8,6 +8,8 @@ jobs:
     - name: install and test bindings
       id: hello
       uses: bmacnaughton/hello-world-docker@v3.2.0
+      with:
+        branch-to-test: 'github-actions'
 #      with:
 #        who-to-greet: 'Bindings the Older'
     # Use the output from the `hello` step
