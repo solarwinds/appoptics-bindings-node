@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # run tests that can be run with one initialization of bindings.
