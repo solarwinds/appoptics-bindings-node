@@ -18,6 +18,10 @@ if ! mocha --expose-gc  test/solo-tests/init-memory.test.js; then
   error=true
 fi
 
+if ! mocha --expose-gc test/solo-tests/reporter-metrics-memory.test.js; then
+  error=true
+fi
+
 [ -n "$error" ] && exit 1
 
 exit 0
