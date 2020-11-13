@@ -5,12 +5,15 @@ jobs:
     runs-on: ubuntu-latest
     name: install bindings on alpine
     steps:
-    - name: install and test bindings
-      id: hello
-      uses: ../actions/alpine
-      with:
-        branch-to-test: 'github-actions'
-        ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: install and test bindings
+        id: alpine
+        uses: ../actions/alpine
+        with:
+          branch-to-test: 'github-actions'
+          ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
 #      with:
 #        who-to-greet: 'Bindings the Older'
     # Use the output from the `hello` step
