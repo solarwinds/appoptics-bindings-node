@@ -9,6 +9,15 @@ inputs:
   ao-token-prod:
     description: 'appoptics token valid in production environment'
     required: true
+outputs:
+  install-prod:
+    description: 'production installation result'
+  install-dev:
+    description: 'development installation result'
+  good-tests:
+    description: 'tests that succeeded'
+  bad-tests:
+    description: 'tests that failed'
 #outputs:
 #  time: # id of output
 #    description: 'The time we greeted you'
