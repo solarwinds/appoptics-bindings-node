@@ -1,7 +1,0 @@
-on: [workflow_dispatch]
-
-jobs:
-  alpine-smoke-test:
-    runs:
-      using: 'docker'
-      image: 'Dockerfile'
