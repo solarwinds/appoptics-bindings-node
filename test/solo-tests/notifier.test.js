@@ -38,7 +38,7 @@ describe('addon.Notifier functions', function () {
 
   before(function (done) {
     if (!key) {
-      done(new Error('missing key'));
+      return done(new Error('missing key'));
     }
     done();
   })
