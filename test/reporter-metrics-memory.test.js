@@ -1,5 +1,3 @@
-'use strict';
-
 const aob = require('../');
 const r = aob.Reporter;
 const expect = require('chai').expect;
@@ -83,7 +81,7 @@ describe('reporter-metrics-memory', function () {
       .then(function () {
         const finish = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish);
-        expect(finish).equal(finish1, 'rss should not change after first iteration');
+        expect(finish).lte(finish1, 'rss should not change after first iteration');
       })
   })
 
