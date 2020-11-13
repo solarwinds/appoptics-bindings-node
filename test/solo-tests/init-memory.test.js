@@ -1,5 +1,14 @@
+//
+// this runs as a separate test in order to make sure that oboe and
+// other tests don't result in false positives. the goal of the test
+// is to make sure that the bindings c++ code does not lose memory
+// during the init process. considering init is only performed once
+// this is probably overkill, but it does verify that the strategy
+// being used to manage memory is valid.
+//
+
 const bindings = require('../../');
-const expect = require('chai').expect;
+
 
 //
 // goodOptions are used in multiple tests so they're declared here
@@ -56,13 +65,19 @@ describe('bindings.oboeInit() memory check', function (done) {
     gc();
 
     const delay = process.env.CI ? 1000 : 250;
+    let n = 3;
 
     // give garbage collection a window to kick in.
-    setTimeout(function () {
+    const id = setInterval(function () {
       const finish = process.memoryUsage().rss;
-      expect(finish).lte(start2, `should execute ${checkCount} metrics without memory growth`);
-      //console.log('s1', start1, 's2', start2 - checkCount, 'fin', finish);
-      done()
+      if (finish <= start2) {
+        clearInterval(id);
+        done();
+      }
+      if (--n <= 0) {
+        clearInterval(id);
+        done(new Error(`${finish} should be less than ${start2} after ${checkCount} metrics`));
+      }
     }, delay);
 
     gc();
