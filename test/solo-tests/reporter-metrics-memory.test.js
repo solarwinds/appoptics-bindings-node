@@ -31,7 +31,7 @@ describe('reporter-metrics-memory', function () {
     const warmup =  500000;
     const checkCount =  1000000;
     // if it's less than 1/10 of a byte per iteration it's good
-    const margin = process.env.CI ? checkCount / 10 : 0;
+    const margin = process.env.CI ? checkCount / 5 : 0;
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;
 
@@ -83,7 +83,7 @@ describe('reporter-metrics-memory', function () {
       .then(function () {
         const finish = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish);
-        expect(finish).lte(finish1 + margin, 'rss now show meaningful growth');
+        expect(finish).lte(finish1 + margin, 'rss should not show meaningful growth');
       })
   })
 
