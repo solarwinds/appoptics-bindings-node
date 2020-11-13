@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: install and test bindings
       id: hello
-      uses: bmacnaughton/hello-world-docker@v3.6.0
+      uses: bmacnaughton/hello-world-docker@v3.6.1
       with:
         branch-to-test: 'github-actions'
         ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
