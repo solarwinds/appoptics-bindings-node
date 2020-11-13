@@ -13,7 +13,9 @@ jobs:
         with:
           branch-to-test: 'github-actions'
           ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
-      - name: get the test results
+      - name: get install production results
         run: echo "npm install --production --unsafe-perm ${{steps.alpine.outputs.install-prod}}"
+      - name: get install dev results
         run: echo "npm install --unsafe-perm ${{steps.alpine.outputs.install-dev}}"
+      - name: get nyi results
         run: echo "good/bad ${{steps.alpine.outputs.good-tests}}/${{steps.alpine.outputs.bad-tests}}"
