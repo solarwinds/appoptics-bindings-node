@@ -1,15 +1,15 @@
-on: [push]
+on: [workflow_dispatch]
 
 jobs:
-  hello_world_job:
+  test-bindings-on-alpine:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: install bindings on alpine
     steps:
-    - name: Hello world action step
+    - name: install and test bindings
       id: hello
-      uses: bmacnaughton/hello-world-docker@v2
-      with:
-        who-to-greet: 'Bindings the Older'
+      uses: bmacnaughton/hello-world-docker@v3.0.1
+#      with:
+#        who-to-greet: 'Bindings the Older'
     # Use the output from the `hello` step
-    - name: Get the output time
-      run: echo "The time was ${{ steps.hello.outputs.time }}"
+#    - name: Get the output time
+#      run: echo "The time was ${{ steps.hello.outputs.time }}"
