@@ -1,0 +1,20 @@
+# action.yml
+name: 'Hello World'
+description: 'Greet someone and record the time'
+inputs:
+  branch-to-test:  # id of input
+    description: 'which branch in the repo should be tested'
+    required: true
+    default: 'master'
+  ao-token-prod:
+    description: 'appoptics token valid in production environment'
+    required: true
+#outputs:
+#  time: # id of output
+#    description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: 'alpine.Dockerfile'
+  args:
+    - ${{inputs.branch-to-test}}
+    - ${{inputs.ao-token-prod}}
