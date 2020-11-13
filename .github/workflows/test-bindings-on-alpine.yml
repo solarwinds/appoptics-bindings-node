@@ -10,7 +10,7 @@ jobs:
 
       - name: install and test bindings
         id: alpine
-        uses: ../actions/alpine
+        uses: ./.github/actions/alpine
         with:
           branch-to-test: 'github-actions'
           ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
