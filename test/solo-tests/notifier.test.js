@@ -36,6 +36,13 @@ describe('addon.Notifier functions', function () {
     });
   });
 
+  before(function (done) {
+    if (!key) {
+      done(new Error('missing key'));
+    }
+    done();
+  })
+
   // before calling oboe init setup the notification server
   before (function () {
     notiServer = net.createServer(function (client) {
