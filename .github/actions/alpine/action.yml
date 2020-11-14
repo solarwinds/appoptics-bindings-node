@@ -1,6 +1,6 @@
 # action.yml
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'run tests on alpine'
+description: 'install bindings and run tests on alpine'
 inputs:
   branch-to-test:  # id of input
     description: 'which branch in the repo should be tested'
