@@ -14,13 +14,12 @@ outputs:
     description: 'production installation result'
   install-dev:
     description: 'development installation result'
-  good-tests:
-    description: 'tests that succeeded'
-  bad-tests:
+  tests-passed-count:
+    description: 'number of tests that succeeded'
+  tests-failed-count:
+    description: 'number of tests that failed'
+  tests-failed:
     description: 'tests that failed'
-#outputs:
-#  time: # id of output
-#    description: 'The time we greeted you'
 runs:
   using: 'docker'
   image: 'alpine.Dockerfile'

@@ -17,5 +17,7 @@ jobs:
         run: echo "npm install --production --unsafe-perm ${{steps.alpine.outputs.install-prod}}"
       - name: get install dev results
         run: echo "npm install --unsafe-perm ${{steps.alpine.outputs.install-dev}}"
-      - name: get nyi results
-        run: echo "good/bad ${{steps.alpine.outputs.good-tests}}/${{steps.alpine.outputs.bad-tests}}"
+      - name: get tests passed count
+        run: echo "tests passed ${{steps.alpine.outputs.tests-passed-count}}"
+      - name: get tests failed
+        run: echo "tests failed ${{steps.alpine.outputs.tests-failed-count}} - ${{steps.alpine.outputs.tests-failed}}"

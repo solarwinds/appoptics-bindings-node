@@ -144,15 +144,28 @@ else
     YELLOW=''
 fi
 
+# these are set up if this was invoked by the github actions script.
+#
+# AOBT_PASS_COUNT="::set-output name=tests-passed-count::"
+# AOBT_FAIL_COUNT="::set-output name=tests-failed-count::"
+# AOBT_FAILED_TESTS="::set-output name=tests-failed::"
+
 echo "$"
 # shellcheck disable=2059
 if [ ${#ERRORS[*]} -ne 0 ]; then
     printf "${GREEN}$SUITES_PASSED suite${sps} in $GROUPS_PASSED group${gps} passed${NC}\n"
     printf "${RED}$SUITES_FAILED suite${sfs} in $errorCount group${gfs} failed${NC}\n"
+    # create output if github actions
+    [ -n "$AOBT_PASS_COUNT" ] && echo "${AOBT_PASS_COUNT}${SUITES_PASSED}"
+    [ -n "$AOBT_FAIL_COUNT" ] && echo "${AOBT_FAIL_COUNT}${SUITES_FAILED}"
+
+    failed=""
     for error in $ERRORS
     do
         printf "${RED}    $error${NC}\n"
+        [ -n "${AOBT_FAILED_TESTS}" ] && failed="$failed $error"
     done
+    [ -n "${AOBT_FAILED_TESTS}" ] && echo "${AOBT_FAILED_TESTS}${failed}"
     if [ $SUITES_SKIPPED -ne 0 ]; then
         printf "${YELLOW}$SUITES_SKIPPED suite${sss} in $skipCount group${gss} skipped${NC}\n"
         for skip in $SKIPPED
@@ -164,6 +177,8 @@ if [ ${#ERRORS[*]} -ne 0 ]; then
     exit 1
 else
     printf "${GREEN}No errors - $SUITES_PASSED suite${sps} in $GROUPS_PASSED group${gps} passed${NC}\n"
+    # create output if github actions
+    [ -n "$AOBT_PASS_COUNT" ] && echo "${AOBT_PASS_COUNT}${SUITES_PASSED}"
     if [ $SUITES_SKIPPED -ne 0 ]; then
         printf "${YELLOW}$SUITES_SKIPPED suite${sss} in $skipCount group${gss} skipped${NC}\n"
         for skip in $SKIPPED
