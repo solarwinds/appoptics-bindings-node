@@ -27,7 +27,7 @@ describe('reporter-metrics-memory', function () {
   });
 
   it('should sendMetric() without losing memory', function () {
-    this.timeout(20000);
+    this.timeout(40000);
     const warmup =  500000;
     const checkCount =  1000000;
     // if it's less than 1/2 a byte per iteration it's good
