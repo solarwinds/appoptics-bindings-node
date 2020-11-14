@@ -1,6 +1,8 @@
-FROM centos:8
+FROM centos/nodejs-12-centos7
 
-RUN yum -y check-update && yum -y install \
+RUN yum -y check-update || echo "packages available for update"
+
+RUN yum -y install \
   gcc-c++ \
   python2 \
   make \
