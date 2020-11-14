@@ -156,7 +156,7 @@ fi
 
 echo "$"
 # shellcheck disable=2059
-if [ ${#ERRORS[*]} -ne 0 ]; then
+if [ $errorCount -ne 0 ]; then
     printf "${GREEN}$SUITES_PASSED suite${sps} in $GROUPS_PASSED group${gps} passed${NC}\n"
     printf "${RED}$SUITES_FAILED suite${sfs} in $errorCount group${gfs} failed${NC}\n"
     # create output if github actions
