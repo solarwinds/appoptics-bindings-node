@@ -1,5 +1,3 @@
-'use strict';
-
 const aob = require('../');
 const expect = require('chai').expect;
 

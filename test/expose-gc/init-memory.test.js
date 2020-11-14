@@ -7,7 +7,7 @@
 // being used to manage memory is valid.
 //
 
-const bindings = require('../../');
+const bindings = require('../..');
 
 
 //
@@ -35,8 +35,9 @@ const goodOptions = {
   proxy: 'http://proxy-host:10101',
 };
 
-describe('bindings.oboeInit() memory check', function (done) {
-  it('should init without losing memory', function (done) {
+
+describe('init-memory', function (done) {
+  it('should oboeInit without losing memory', function (done) {
     // node 8, 10 completes in < 30 seconds but node 12 takes longer
     this.timeout(process.env.CI ? 100000 : 40000);
     const warmup = 1000000;
