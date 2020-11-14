@@ -1,7 +1,6 @@
 FROM centos/nodejs-12-centos7
 
-RUN echo "root:really" | chpasswd
-RUN su
+USER root
 
 RUN yum -y check-update || echo "packages available for update"
 
