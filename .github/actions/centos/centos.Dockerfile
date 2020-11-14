@@ -1,5 +1,8 @@
 FROM centos/nodejs-12-centos7
 
+RUN echo "root:really" | chpasswd
+RUN su
+
 RUN yum -y check-update || echo "packages available for update"
 
 RUN yum -y install \
