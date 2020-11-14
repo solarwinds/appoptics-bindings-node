@@ -1,5 +1,5 @@
 name: test other OSes
-on: push
+on: workflow_dispatch
 
 jobs:
   test-bindings-on-alpine:
