@@ -105,21 +105,25 @@ executeTestGroup() {
     fi
 }
 
+# CI environments (github actions in particular) seem to intermittently
+# take a long time.
+[ -n "$CI" ] && timeout="--timeout=10000"
+
 
 #
 # run unit tests with the addon enabled
 #
-executeTestGroup "CORE" "test/*.test.js"
+executeTestGroup "CORE" "test/*.test.js" "$timeout"
 
 #
 # run unit tests without the addon disabled
 #
-executeTestGroup "SOLO" "test/solo/*.test.js"
+executeTestGroup "SOLO" "test/solo/*.test.js" "$timeout"
 
 #
 # run tests that require gc to be exposed
 #
-executeTestGroup "GC" "test/expose-gc/*.test.js" "--expose-gc"
+executeTestGroup "GC" "test/expose-gc/*.test.js" "--expose-gc $timeout"
 
 
 #=======================================
