@@ -21,7 +21,7 @@ outputs:
   tests-failed:
     description: 'tests that failed'
 runs:
-  using: 'docker'
+  using: 'docker -u root'
   image: 'centos.Dockerfile'
   args:
     - ${{inputs.branch-to-test}}
