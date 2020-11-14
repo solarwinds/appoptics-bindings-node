@@ -1,4 +1,4 @@
-name: test alpine and centos
+name: test other OSes
 on: push
 
 jobs:
