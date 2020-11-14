@@ -1,4 +1,6 @@
-on: [workflow_dispatch]
+name: test alpine and centos
+on:
+  workflow_dispatch:
 
 jobs:
   test-bindings-on-alpine:
