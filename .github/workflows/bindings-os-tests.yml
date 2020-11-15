@@ -42,7 +42,3 @@ jobs:
         run: echo "tests passed ${{steps.centos.outputs.tests-passed-count}}"
       - name: get tests failed
         run: echo "tests failed ${{steps.centos.outputs.tests-failed-count}} - ${{steps.centos.outputs.tests-failed}}"
-
-# trigger
-# curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GIT_TOKEN"  https://api.github.com/repos/appoptics/appoptics-bindings-node/actions/workflows/bindings-os-tests.yml/dispatches   -d '{"ref":"github-actions"}'
-# https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#create-a-workflow-dispatch-event
