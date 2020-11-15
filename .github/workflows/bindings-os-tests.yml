@@ -1,4 +1,4 @@
-name: test other OSes
+name: bindings-os-tests
 on: workflow_dispatch
 
 jobs:
