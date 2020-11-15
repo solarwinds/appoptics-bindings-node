@@ -27,6 +27,7 @@ const actions = {
   'list-runs': listRuns,
   'get-run': getRun,
   'delete-run': deleteRun,
+  'initiate': initiate,
 };
 
 
@@ -115,6 +116,19 @@ async function getRun (args) {
         }
         return p.value;
       });
+    });
+}
+
+// curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GIT_TOKEN" \
+//   https://api.github.com/repos/appoptics/appoptics-bindings-node/actions/workflows/bindings-os-tests.yml/dispatches -d '{"ref":"github-actions"}'
+// previous works but following doesn't
+//
+async function initiate (args) {
+  const url = `${apiRoot}/repos/${owner}/${repo}/actions/workflows/${wfName}/dispatches`;
+  const data = {ref: args[0] || 'github-actions'};
+  return axios.post(url, data, {headers})
+    .then(r => {
+      return r.data;
     });
 }
 
