@@ -14,6 +14,8 @@ jobs:
         with:
           branch-to-test: 'github-actions'
           ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
+      - name: show operating system details
+        run: echo "/etc/os-release: ${{steps.alpine.outputs.os-details}}"
       - name: get install production results
         run: echo "npm install --production --unsafe-perm ${{steps.alpine.outputs.install-prod}}"
       - name: get install dev results
@@ -34,6 +36,8 @@ jobs:
         with:
           branch-to-test: 'github-actions'
           ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
+      - name: show operating system details
+        run: echo "/etc/os-release: ${{steps.centos.outputs.os-details}}"
       - name: get install production results
         run: echo "npm install --production --unsafe-perm ${{steps.centos.outputs.install-prod}}"
       - name: get install dev results

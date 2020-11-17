@@ -4,6 +4,9 @@ branch="$1"
 # shellcheck disable=SC2034 # used by appoptics-bindings in tests
 export AO_TOKEN_PROD="$2"
 
+details=$(cat /etc/os-release)
+echo "::set-output name=os-details::$details"
+
 cd "$GITHUB_WORKSPACE" || exit 1
 git clone --depth=1 https://github.com/appoptics/appoptics-bindings-node aob -b "$branch"
 cd aob || exit 1
