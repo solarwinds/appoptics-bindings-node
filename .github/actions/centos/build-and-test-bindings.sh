@@ -4,7 +4,8 @@ branch="$1"
 # shellcheck disable=SC2034 # used by appoptics-bindings in tests
 export AO_TOKEN_PROD="$2"
 
-details=$(cat /etc/os-release)
+# make os-release one line
+details=$(sed 'H;1h;$!d;x;y/\n/,/' < /etc/os-release)
 echo "::set-output name=os-details::$details"
 
 cd "$GITHUB_WORKSPACE" || exit 1
