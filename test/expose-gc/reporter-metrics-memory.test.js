@@ -31,7 +31,7 @@ describe('reporter-metrics-memory', function () {
     const warmup =  500000;
     const checkCount =  1000000;
     // if it's less than 1 byte per iteration it's good
-    const margin = process.env.CI ? checkCount : 0;
+    const margin = checkCount;
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;
 
@@ -92,7 +92,7 @@ describe('reporter-metrics-memory', function () {
     const warmup = 500000;
     const checkCount = 1000000;
     // allowable margin
-    const margin = process.env.CI ? checkCount : 0;
+    const margin = checkCount;
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;
 
