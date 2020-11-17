@@ -18,7 +18,7 @@
 const axios = require('axios');
 
 // simple syntax ./gh-actions.js workflow-name workflow-action workflow-specific-arguments
-// workflow-action: get runs
+// workflow-action: list-runs
 
 
 const [wfName, action, ...args] = process.argv.slice(2);
@@ -158,6 +158,9 @@ function makeRange (low, high) {
       })
       .catch(e => {
         console.error(`error executing ${action}: ${e.message}`);
+        if (e.response && e.response.data) {
+          console.error(`  response message: ${e.response.data.message}`);
+        }
         process.exit(1);
       });
   } else {
