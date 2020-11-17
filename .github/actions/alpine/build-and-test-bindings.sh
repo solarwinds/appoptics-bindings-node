@@ -5,7 +5,7 @@ branch="$1"
 export AO_TOKEN_PROD="$2"
 
 # make os-release one line
-details=$(sed 'H;1h;$!d;x;y/\n/,/' < /etc/os-release)
+details=$(sed 'H;1h;$!d;x;y/\n/,/' < /etc/os-release | tr -d '()')
 echo "::set-output name=os-details::$details"
 
 cd "$GITHUB_WORKSPACE" || exit 1
