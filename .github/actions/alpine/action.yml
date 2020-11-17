@@ -10,6 +10,8 @@ inputs:
     description: 'appoptics token valid in production environment'
     required: true
 outputs:
+  os-details:
+    description: 'contents of /etc/os-release'
   install-prod:
     description: 'production installation result'
   install-dev:
