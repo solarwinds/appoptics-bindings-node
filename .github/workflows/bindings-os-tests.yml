@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - gh-actions-2
 
 jobs:
   test-image-builder:
