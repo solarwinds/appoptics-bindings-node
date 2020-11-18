@@ -1,5 +1,14 @@
 name: bindings-os-tests extend tests to alpine & centos
-on: [workflow_dispatch]
+
+# https://github.community/t/trigger-workflow-only-on-pull-request-merge/17359
+on:
+  # manual trigger
+  workflow_dispatch:
+  # most pushes to master are the result of a pull request, so this is effectively
+  # "on pull_request merge to master"
+  push:
+    branches:
+      - master
 
 jobs:
   test-bindings-on-alpine:
