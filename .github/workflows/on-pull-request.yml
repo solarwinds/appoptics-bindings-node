@@ -1,4 +1,4 @@
-name: on-pull-request
+name: on-pull-request node-ubuntu matrix
 
 on: [pull_request]
 

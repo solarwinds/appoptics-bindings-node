@@ -1,6 +1,4 @@
-'use strict';
-
-const aob = require('../');
+const aob = require('../..');
 const r = aob.Reporter;
 const expect = require('chai').expect;
 
@@ -29,9 +27,11 @@ describe('reporter-metrics-memory', function () {
   });
 
   it('should sendMetric() without losing memory', function () {
-    this.timeout(20000);
+    this.timeout(40000);
     const warmup =  500000;
     const checkCount =  1000000;
+    // if it's less than 1 byte per iteration it's good
+    const margin = checkCount;
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;
 
@@ -83,14 +83,16 @@ describe('reporter-metrics-memory', function () {
       .then(function () {
         const finish = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish);
-        expect(finish).equal(finish1, 'rss should not change after first iteration');
+        expect(finish).lte(finish1 + margin, 'rss should not show meaningful growth');
       })
   })
 
   it('should sendMetrics() without losing memory', function () {
-    this.timeout(20000);
+    this.timeout(40000);
     const warmup = 500000;
     const checkCount = 1000000;
+    // allowable margin
+    const margin = checkCount;
     // garbage collect if available
     const gc = typeof global.gc === 'function' ? global.gc : () => null;
 
@@ -142,7 +144,7 @@ describe('reporter-metrics-memory', function () {
       .then(function () {
         const finish = process.memoryUsage().rss;
         //console.log(start1, done1, start2, done2, finish);
-        expect(finish).equal(finish1, 'rss should not change after first iteration');
+        expect(finish).lte(finish1 + margin, 'rss should not show meaningful growth');
       })
   })
 })

@@ -36,6 +36,13 @@ describe('addon.Notifier functions', function () {
     });
   });
 
+  before(function (done) {
+    if (!key) {
+      return done(new Error('missing key'));
+    }
+    done();
+  })
+
   // before calling oboe init setup the notification server
   before (function () {
     notiServer = net.createServer(function (client) {
@@ -228,7 +235,7 @@ describe('addon.Notifier functions', function () {
     }
 
     aob.Notifier.stop();
-    expect(aob.Notifier.status()).equal(-3, 'status should be shutting-down');
+    expect(aob.Notifier.status()).oneOf([-3, -1], 'status should be shutting-down or disabled');
 
     setTimeout(function () {
       expect(aob.Notifier.status()).equal(-1, 'status should be disabled');

@@ -81,6 +81,7 @@ describe('addon.settings', function () {
     const xtrace = event.toString();
     const settings = bindings.Settings.getTraceSettings({xtrace});
 
+    expect(settings).property('message', 'ok');
     expect(settings).property('status', -1)       // -1 means non-sampled xtrace
     expect(settings).property('doSample', false);
     expect(settings.metadata.toString()).equal(xtrace);
