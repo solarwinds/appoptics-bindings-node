@@ -11,47 +11,73 @@ on:
       - master
 
 jobs:
-  test-bindings-on-alpine:
+  test-image-builder:
+    strategy:
+      matrix:
+        os-version: ['10-alpine3.9', '10-alpine3.10', '10-alpine3.11']
     runs-on: ubuntu-latest
-    name: install and test bindings on alpine
+    name: job to create a docker action using a specific os/node combination
     steps:
-      - uses: actions/checkout@v2
+    # To use a repo-specific action you must check out the repository
+    - name: Checkout to root dir
+      uses: actions/checkout@v2
+    - name: Create specific alpine/node image
+      id: generic
+      uses: ./.github/actions/generic
+      with:
+        branch-to-test: 'gh-actions-2'
+        ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
+        node-image: ${{matrix.os-version}}
+    # Use the output from the `generic` step
+    - name: show all arguments from first script
+      run: echo "all arguments ${{steps.generic.outputs.all-args}}"
+    - name: all arguments from second script
+      run: echo "all args 2 ${{steps.generic.outputs.all-args-2}}"
+    - name: Get alpine version
+      run: echo "alpine ${{steps.generic.outputs.version}}, branch ${{steps.generic.outputs.branch-to-test}}"
 
-      - name: install and test bindings
-        id: alpine
-        uses: ./.github/actions/alpine
-        with:
-          branch-to-test: 'github-actions'
-          ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
-      - name: show operating system details
-        run: echo "/etc/os-release ${{steps.alpine.outputs.os-details}}"
-      - name: get install production results
-        run: echo "npm install --production --unsafe-perm ${{steps.alpine.outputs.install-prod}}"
-      - name: get install dev results
-        run: echo "npm install --unsafe-perm ${{steps.alpine.outputs.install-dev}}"
-      - name: get tests passed count
-        run: echo "tests passed ${{steps.alpine.outputs.tests-passed-count}}"
-      - name: get tests failed
-        run: echo "tests failed ${{steps.alpine.outputs.tests-failed-count}} - ${{steps.alpine.outputs.tests-failed}}"
-  test-bindings-on-centos:
-    runs-on: ubuntu-latest
-    name: install and test bindings on centos
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: install and test bindings
-        id: centos
-        uses: ./.github/actions/centos
-        with:
-          branch-to-test: 'github-actions'
-          ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
-      - name: show operating system details
-        run: echo "/etc/os-release ${{steps.centos.outputs.os-details}}"
-      - name: get install production results
-        run: echo "npm install --production --unsafe-perm ${{steps.centos.outputs.install-prod}}"
-      - name: get install dev results
-        run: echo "npm install --unsafe-perm ${{steps.centos.outputs.install-dev}}"
-      - name: get tests passed count
-        run: echo "tests passed ${{steps.centos.outputs.tests-passed-count}}"
-      - name: get tests failed
-        run: echo "tests failed ${{steps.centos.outputs.tests-failed-count}} - ${{steps.centos.outputs.tests-failed}}"
+#jobs:
+#  test-bindings-on-alpine:
+#    runs-on: ubuntu-latest
+#    name: install and test bindings on alpine
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: install and test bindings
+#        id: alpine
+#        uses: ./.github/actions/alpine
+#        with:
+#          branch-to-test: 'gh-actions-2'
+#          ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
+#      - name: show operating system details
+#        run: echo "/etc/os-release ${{steps.alpine.outputs.os-details}}"
+#      - name: get install production results
+#        run: echo "npm install --production --unsafe-perm ${{steps.alpine.outputs.install-prod}}"
+#      - name: get install dev results
+#        run: echo "npm install --unsafe-perm ${{steps.alpine.outputs.install-dev}}"
+#      - name: get tests passed count
+#        run: echo "tests passed ${{steps.alpine.outputs.tests-passed-count}}"
+#      - name: get tests failed
+#        run: echo "tests failed ${{steps.alpine.outputs.tests-failed-count}} - ${{steps.alpine.outputs.tests-failed}}"
+#  test-bindings-on-centos:
+#    runs-on: ubuntu-latest
+#    name: install and test bindings on centos
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: install and test bindings
+#        id: centos
+#        uses: ./.github/actions/centos
+#        with:
+#          branch-to-test: 'github-actions'
+#          ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
+#      - name: show operating system details
+#        run: echo "/etc/os-release ${{steps.centos.outputs.os-details}}"
+#      - name: get install production results
+#        run: echo "npm install --production --unsafe-perm ${{steps.centos.outputs.install-prod}}"
+#      - name: get install dev results
+#        run: echo "npm install --unsafe-perm ${{steps.centos.outputs.install-dev}}"
+#      - name: get tests passed count
+#        run: echo "tests passed ${{steps.centos.outputs.tests-passed-count}}"
+#      - name: get tests failed
+#        run: echo "tests failed ${{steps.centos.outputs.tests-failed-count}} - ${{steps.centos.outputs.tests-failed}}"
