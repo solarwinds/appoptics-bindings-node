@@ -4,6 +4,7 @@ FROM node:${os_version}
 
 ARG branch
 ARG token
+ARG workspace
 ENV BRANCH=$branch \
     TOKEN=$token \
     GITHUB_ACTIONS=true \
