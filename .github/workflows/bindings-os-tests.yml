@@ -34,8 +34,8 @@ jobs:
       run: echo "all arguments ${{steps.generic.outputs.all-args}}"
     - name: all arguments from second script
       run: echo "all args 2 ${{steps.generic.outputs.all-args-2}}"
-    - name: Get alpine version
-      run: echo "alpine ${{steps.generic.outputs.os-version}}, branch ${{steps.generic.outputs.branch-to-test}}"
+    - name: Get os version
+      run: echo "os ${{steps.generic.outputs.os-details}}, branch ${{steps.generic.outputs.branch-to-test}}"
 
 #jobs:
 #  test-bindings-on-alpine:
