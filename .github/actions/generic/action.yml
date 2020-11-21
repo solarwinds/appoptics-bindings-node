@@ -26,7 +26,8 @@ outputs:
 runs:
   using: 'docker'
   image: 'generic.Dockerfile'
+  # these have to be in the same order as they are expected in entrypoint.sh
   args:
+    - ${{inputs.node-image}}
     - ${{inputs.branch-to-test}}
     - ${{inputs.ao-token-prod}}
-    - ${{inputs.node-image}}
