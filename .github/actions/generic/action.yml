@@ -1,0 +1,32 @@
+name: 'run tests on specified os/node combination'
+description: 'just run for now'
+inputs:
+  branch-to-test:  # id of input
+    description: 'which branch in the repo should be tested'
+    required: true
+    default: 'master'
+  ao-token-prod:
+    description: 'appoptics token valid in production environment'
+    required: true
+  node-image:
+    description: 'docker image suffix (part following the colon)'
+outputs:
+  os-details:
+    description: 'contents of /etc/os-release'
+  #install-prod:
+  #  description: 'production installation result'
+  #install-dev:
+  #  description: 'development installation result'
+  #tests-passed-count:
+  #  description: 'number of tests that succeeded'
+  #tests-failed-count:
+  #  description: 'number of tests that failed'
+  #tests-failed:
+  #  description: 'tests that failed'
+runs:
+  using: 'docker'
+  image: 'generic.Dockerfile'
+  args:
+    - ${{inputs.branch-to-test}}
+    - ${{inputs.ao-token-prod}}
+    - ${{inputs.node-image}}

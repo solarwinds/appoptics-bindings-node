@@ -1,4 +1,5 @@
-# Container image that runs your code
+# Container image that runs your code. this container just builds another container because it's not
+# possible to dynamically specify a docker file or an image in github actions.
 FROM alpine:latest
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
