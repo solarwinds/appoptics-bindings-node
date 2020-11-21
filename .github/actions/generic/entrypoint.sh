@@ -13,6 +13,7 @@ echo "make a change"
 # here we can make the construction of the image as customizable as we need
 # and if we need parameterizable values it is a matter of sending them as inputs
 docker build . -t docker-action \
+    -e GITHUB_ACTIONS=true -e GITHUB_WORKSPACE -e CI=true \
     --build-arg os_version="$OS_VERSION" \
     --build-arg branch="$BRANCH" \
     --build-arg token="$TOKEN" \
