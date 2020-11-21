@@ -5,7 +5,10 @@ FROM node:${os_version}
 ARG branch
 ARG token
 ENV BRANCH=$branch \
-    TOKEN=$token
+    TOKEN=$token \
+    GITHUB_ACTIONS=true \
+    CI=true \
+    GITHUB_WORKSPACE=$workspace
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY build-and-test-bindings.sh /build-and-test-bindings.sh
