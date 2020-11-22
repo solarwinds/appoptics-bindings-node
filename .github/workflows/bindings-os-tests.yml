@@ -1,4 +1,4 @@
-name: bindings-os-tests extend tests to alpine & centos
+name: bindings-os-tests extend tests to alpine
 
 # https://github.community/t/trigger-workflow-only-on-pull-request-merge/17359
 on:
@@ -9,13 +9,15 @@ on:
   push:
     branches:
       - master
-      - gh-actions-2
 
 jobs:
   test-image-builder:
     strategy:
       matrix:
-        os-version: ['10-alpine3.9', '10-alpine3.10', '10-alpine3.11']
+        os-version: ['10-alpine3.9', '10-alpine3.10', '10-alpine3.11',
+        '12-alpine3.9', '12-alpine3.10', '12-alpine3.11', '12-alpine3.12'
+        '14-alpine3.10', '14-alpine3.11', '14-alpine3.12',
+        '15-alpine3.12']
     runs-on: ubuntu-latest
     name: job to create a docker action using a specific os/node combination
     steps:
