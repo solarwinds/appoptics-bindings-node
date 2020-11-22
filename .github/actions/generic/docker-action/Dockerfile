@@ -13,7 +13,7 @@ ENV BRANCH=$branch \
 
 RUN apk update && apk add \
   g++ \
-  python \
+  python2 \
   make \
   git \
   curl \
