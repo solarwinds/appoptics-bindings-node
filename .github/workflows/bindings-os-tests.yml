@@ -8,6 +8,7 @@ on:
   # "on pull_request merge to master"
   push:
     branches:
+      - gh-actions-2
       - master
 
 jobs:
