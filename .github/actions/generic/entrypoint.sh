@@ -17,6 +17,6 @@ docker build . -t docker-action \
     --build-arg os_version="$OS_VERSION" \
     --build-arg branch="$BRANCH" \
     --build-arg token="$TOKEN" \
-    && docker run docker-action
+    && docker run -v "/github/workspace":"/github/workspace" docker-action
 
 
