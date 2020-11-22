@@ -11,6 +11,14 @@ ENV BRANCH=$branch \
     CI=true \
     GITHUB_WORKSPACE=$workspace
 
+RUN apk update && apk add \
+  g++ \
+  python \
+  make \
+  git \
+  curl \
+  nano
+
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY build-and-test-bindings.sh /build-and-test-bindings.sh
 RUN chmod +x /build-and-test-bindings.sh
