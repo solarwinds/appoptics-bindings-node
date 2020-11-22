@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os-version: ['10-alpine3.9', '10-alpine3.10', '10-alpine3.11',
-        '12-alpine3.9', '12-alpine3.10', '12-alpine3.11', '12-alpine3.12'
+        '12-alpine3.9', '12-alpine3.10', '12-alpine3.11', '12-alpine3.12',
         '14-alpine3.10', '14-alpine3.11', '14-alpine3.12',
         '15-alpine3.12']
     runs-on: ubuntu-latest
