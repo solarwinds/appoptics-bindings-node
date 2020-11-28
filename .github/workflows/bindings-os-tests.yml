@@ -15,12 +15,16 @@ jobs:
   test-image-builder:
     strategy:
       matrix:
-        # need to add node version somehow. centos doesn't have one by default. hmmm.
-        os-version: ['node:10-alpine3.9', 'centos:7+node:10' ]
-        #'10-alpine3.9', '10-alpine3.10', '10-alpine3.11',
-        #'12-alpine3.9', '12-alpine3.10', '12-alpine3.11', '12-alpine3.12',
-        #'14-alpine3.10', '14-alpine3.11', '14-alpine3.12',
-        #'15-alpine3.12']
+        os-version: [
+        #'node:10-alpine3.9', 'node:10-alpine3.10', 'node:10-alpine3.11',
+        #'node:12-alpine3.9', 'node:12-alpine3.10', 'node:12-alpine3.11', 'node:12-alpine3.12',
+        #'node:14-alpine3.10', 'node:14-alpine3.11', 'node:14-alpine3.12',
+        'node:15-alpine3.12',
+        #'centos:7+node:10', 'centos:8+node:10',
+        #'centos:7+node:12', 'centos:8+node:12',
+        #'centos:7+node:14', 'centos:8+node:14',
+        'centos:8+node:15'
+        ]
     runs-on: ubuntu-latest
     name: job to create a docker action using a specific os/node combination
     steps:
@@ -41,6 +45,14 @@ jobs:
       run: echo "all args 2 ${{steps.generic.outputs.all-args-2}}"
     - name: Get os version
       run: echo "os ${{steps.generic.outputs.os-details}}, branch ${{steps.generic.outputs.branch-to-test}}"
+    - name: get install production results
+      run: echo "npm install --production --unsafe-perm ${{steps.generic.outputs.install-prod}}"
+    - name: get install dev results
+      run: echo "npm install --unsafe-perm ${{steps.generic.outputs.install-dev}}"
+    - name: get tests passed count
+      run: echo "tests passed ${{steps.generic.outputs.tests-passed-count}}"
+    - name: get tests failed
+      run: echo "tests failed ${{steps.generic.outputs.tests-failed-count}} - ${{steps.generic.outputs.tests-failed}}"
 
 #jobs:
 #  test-bindings-on-alpine:
