@@ -62,6 +62,14 @@ case "$os_string" in
   *) exit 1 ;;
 esac
 
+#echo "base: $base"
+#echo "image: $image"
+#echo "node_version: $node_version"
+#echo "os_string: $os_string"
+#echo "os: $os"
+#
+#exit 0
+
 cd /docker-action || exit 1
 echo "creating test image from: $image"
 echo "make a change"
