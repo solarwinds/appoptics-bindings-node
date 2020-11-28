@@ -12,7 +12,7 @@ echo "::set-output name=os-details::$details"
 if ! which node; then
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    nvm install --LTS
+    nvm install --lts
 fi
 
 cd "$GITHUB_WORKSPACE" || exit 1
