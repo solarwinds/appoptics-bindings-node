@@ -44,7 +44,7 @@ jobs:
       run: |
         echo "all args 1 ${{steps.generic.outputs.all-args}}"
         echo "all args 2 ${{steps.generic.outputs.all-args-2}}"
-        echo "os ${{steps.generic.outputs.os-details}}
+        echo "os ${{steps.generic.outputs.os-details}}"
         echo "branch ${{steps.generic.outputs.branch-to-test}}"
     - name: test results
       run: |
