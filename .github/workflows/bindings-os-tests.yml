@@ -15,7 +15,8 @@ jobs:
   test-image-builder:
     strategy:
       matrix:
-        os-version: ['alpine:node:10-alpine3.9', 'centos:centos:7' ]
+        # need to add node version somehow. centos doesn't have one by default. hmmm.
+        os-version: ['node:10-alpine3.9', 'centos:7=node:10' ]
         #'10-alpine3.9', '10-alpine3.10', '10-alpine3.11',
         #'12-alpine3.9', '12-alpine3.10', '12-alpine3.11', '12-alpine3.12',
         #'14-alpine3.10', '14-alpine3.11', '14-alpine3.12',

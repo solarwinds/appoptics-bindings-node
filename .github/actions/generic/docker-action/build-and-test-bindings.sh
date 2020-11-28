@@ -3,16 +3,21 @@
 branch="$1"
 # shellcheck disable=SC2034 # used by appoptics-bindings in tests
 export AO_TOKEN_PROD="$2"
+node_version="$3"
+# shellcheck disable=SC2034
+os_string="$4"
 
 # make os-release one line and get rid of the garbage that confuses github actions
 details=$(tr -d '()' < /etc/os-release | tr '\n' ',' | sed 's/ANSI_COLOR="0;31",//')
 echo "::set-output name=os-details::$details"
 
-
+# if node isn't installed them nvm should be (handled by <os>.Dockerfile)
 if ! which node; then
+    [ -d "$HOME/.nvm" ] || exit 1
     export NVM_DIR="$HOME/.nvm"
+    # shellcheck disable=SC1090
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    nvm install --lts
+    nvm install "$node_version"
 fi
 
 cd "$GITHUB_WORKSPACE" || exit 1
