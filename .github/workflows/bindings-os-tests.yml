@@ -33,7 +33,7 @@ jobs:
     - name: Checkout to root dir
       uses: actions/checkout@v2
     - name: get branch
-      run: echo "gh_branch=${GITHUB_REF#refs/heads/}"
+      run: echo "gh_branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
     - name: Create specific alpine/node image
       id: generic
       uses: ./.github/actions/generic
