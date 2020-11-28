@@ -10,7 +10,7 @@ ENV BRANCH=$branch \
     GITHUB_ACTIONS=true \
     CI=true \
     GITHUB_WORKSPACE=$workspace
- 
+
 # centos needs the user to be root; sudo doesn't work.
 USER root
 # yum returns non-zero exit code (100) if packages available for update
@@ -25,8 +25,8 @@ RUN yum -y install \
   curl \
   nano
 
-COPY ./build-and-test-bindings.sh /root/build-and-test-bindings.sh
-RUN chmod +x /root/build-and-test-bindings.sh
+COPY build-and-test-bindings.sh /build-and-test-bindings.sh
+RUN chmod +x /build-and-test-bindings.sh
 
 # use the no brackets for so the env vars are interpreted
 ENTRYPOINT /build-and-test-bindings.sh $BRANCH $TOKEN
