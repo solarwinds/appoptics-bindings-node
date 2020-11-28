@@ -32,11 +32,15 @@ jobs:
     # To use a repo-specific action you must check out the repository
     - name: Checkout to root dir
       uses: actions/checkout@v2
+    - name: get branch
+      run: echo "gh_branch=${GITHUB_REF#refs/heads/}"
     - name: Create specific alpine/node image
       id: generic
       uses: ./.github/actions/generic
       with:
-        branch-to-test: 'gh-actions-2'
+        # try this that probably won't work
+        branch-to-test: ${{env.gh_branch}}
+        #branch-to-test: 'gh-actions-2'
         ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
         node-image: ${{matrix.os-version}}
     # Use the output from the `generic` step
