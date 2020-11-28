@@ -9,20 +9,7 @@ inputs:
     description: 'appoptics token valid in production environment'
     required: true
   node-image:
-    description: 'docker image suffix (part following the colon)'
-outputs:
-  os-details:
-    description: 'contents of /etc/os-release'
-  #install-prod:
-  #  description: 'production installation result'
-  #install-dev:
-  #  description: 'development installation result'
-  #tests-passed-count:
-  #  description: 'number of tests that succeeded'
-  #tests-failed-count:
-  #  description: 'number of tests that failed'
-  #tests-failed:
-  #  description: 'tests that failed'
+    description: 'docker image that will be used to build the test container'
 runs:
   using: 'docker'
   image: 'generic.Dockerfile'
