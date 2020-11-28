@@ -16,13 +16,13 @@ jobs:
     strategy:
       matrix:
         os-version: [
-        #'node:10-alpine3.9', 'node:10-alpine3.10', 'node:10-alpine3.11',
-        #'node:12-alpine3.9', 'node:12-alpine3.10', 'node:12-alpine3.11', 'node:12-alpine3.12',
-        #'node:14-alpine3.10', 'node:14-alpine3.11', 'node:14-alpine3.12',
+        'node:10-alpine3.9', 'node:10-alpine3.10', 'node:10-alpine3.11',
+        'node:12-alpine3.9', 'node:12-alpine3.10', 'node:12-alpine3.11', 'node:12-alpine3.12',
+        'node:14-alpine3.10', 'node:14-alpine3.11', 'node:14-alpine3.12',
         'node:15-alpine3.12',
-        #'centos:7+node:10', 'centos:8+node:10',
-        #'centos:7+node:12', 'centos:8+node:12',
-        #'centos:7+node:14', 'centos:8+node:14',
+        'centos:7+node:10', 'centos:8+node:10',
+        'centos:7+node:12', 'centos:8+node:12',
+        'centos:7+node:14', 'centos:8+node:14',
         'centos:8+node:15'
         ]
     runs-on: ubuntu-latest
@@ -32,19 +32,19 @@ jobs:
     # To use a repo-specific action you must check out the repository
     - name: Checkout to root dir
       uses: actions/checkout@v2
+    # jump through a little hoop to get the branch by itself
     - name: get branch
       run: echo "gh_branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
     - name: Create specific alpine/node image
       id: generic
       uses: ./.github/actions/generic
       with:
-        # try this that probably won't work
+        # specify testing the branch that this was invoked for
         branch-to-test: ${{env.gh_branch}}
-        #branch-to-test: 'gh-actions-2'
         ao-token-prod: ${{secrets.AO_TOKEN_PROD}}
         node-image: ${{matrix.os-version}}
     # Use the output from the `generic` step
-    - name: show arguments from 1st & 2nd scripts and os details
+    - name: show info, context, and debugging information
       run: |
         echo "all args 1 ${{steps.generic.outputs.all-args}}"
         echo "all args 2 ${{steps.generic.outputs.all-args-2}}"
