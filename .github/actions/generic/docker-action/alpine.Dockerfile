@@ -11,6 +11,7 @@ ENV BRANCH=$branch \
     CI=true \
     GITHUB_WORKSPACE=$workspace
 
+# install software required for this OS
 RUN apk update && apk add \
   g++ \
   python2 \
@@ -19,9 +20,9 @@ RUN apk update && apk add \
   curl \
   nano
 
-# Copies your code file from your action repository to the filesystem path `/` of the container
+
 COPY build-and-test-bindings.sh /build-and-test-bindings.sh
 RUN chmod +x /build-and-test-bindings.sh
 
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
+# use the no brackets for so the env vars are interpreted
 ENTRYPOINT /build-and-test-bindings.sh $BRANCH $TOKEN
