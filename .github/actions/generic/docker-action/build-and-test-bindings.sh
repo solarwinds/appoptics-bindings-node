@@ -8,6 +8,13 @@ export AO_TOKEN_PROD="$2"
 details=$(tr -d '()' < /etc/os-release | tr '\n' ',' | sed 's/ANSI_COLOR="0;31",//')
 echo "::set-output name=os-details::$details"
 
+
+if ! which node; then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm install --LTS
+fi
+
 cd "$GITHUB_WORKSPACE" || exit 1
 git clone --depth=1 https://github.com/appoptics/appoptics-bindings-node aob -b "$branch"
 cd aob || exit 1
