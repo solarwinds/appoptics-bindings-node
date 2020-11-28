@@ -1,6 +1,6 @@
 # Container image that runs your code
-ARG os_version
-FROM node:${os_version}
+ARG image
+FROM $image
 
 ARG branch
 ARG token

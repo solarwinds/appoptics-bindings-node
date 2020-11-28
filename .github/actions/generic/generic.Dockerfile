@@ -1,8 +1,8 @@
-# Container image that runs your code. this container just builds another container because it's not
-# possible to dynamically specify a docker file or an image in github actions.
+# this container just builds another container because it's not possible to
+# dynamically specify a docker file or an image in github actions.
 FROM alpine:latest
 
-# Copies your code file from your action repository to the filesystem path `/` of the container
+# Copy the docker files that we'll build.
 COPY docker-action /docker-action
 COPY entrypoint.sh /entrypoint.sh
 

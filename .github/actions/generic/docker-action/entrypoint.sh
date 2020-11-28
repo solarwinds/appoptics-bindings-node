@@ -1,4 +1,9 @@
 #!/bin/sh -l
+
+# this is the entrypoint.sh script of the <os>.Dockerfile files
+# each <os>.Dockerfile must set up the image so the correct files
+# are present to install and build appoptics-bindings.
+
 branch=$1
 echo "::set-output name=all-args-2::$*"
 
