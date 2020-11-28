@@ -48,7 +48,7 @@ jobs:
         echo "branch ${{steps.generic.outputs.branch-to-test}}"
     - name: test results
       run: |
-        echo "npm install --production --unsafe-perm ${{steps.generic.outputs.install-prod}}"
-        echo "npm install --unsafe-perm ${{steps.generic.outputs.install-dev}}"
-        echo "tests passed ${{steps.generic.outputs.tests-passed-count}}"
-        echo "tests failed ${{steps.generic.outputs.tests-failed-count}} - ${{steps.generic.outputs.tests-failed}}"
+        echo "npm install --production --unsafe-perm: ${{steps.generic.outputs.install-prod}}"
+        echo "npm install --unsafe-perm: ${{steps.generic.outputs.install-dev}}"
+        echo "tests passed: ${{steps.generic.outputs.tests-passed-count}}"
+        echo "tests failed: ${{steps.generic.outputs.tests-failed-count}} - ${{steps.generic.outputs.tests-failed}}"
