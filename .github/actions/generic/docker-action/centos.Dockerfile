@@ -1,4 +1,4 @@
-# container image that runs your code
+# Container that will execute the tests
 ARG image
 FROM $image
 

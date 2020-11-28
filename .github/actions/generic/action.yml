@@ -1,5 +1,5 @@
-name: 'run tests on specified os/node combination'
-description: 'just run for now'
+name: 'run tests'
+description: 'create a container that creates the container to run tests'
 inputs:
   branch-to-test:  # id of input
     description: 'which branch in the repo should be tested'
