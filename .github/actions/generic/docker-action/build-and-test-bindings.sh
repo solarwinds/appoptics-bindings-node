@@ -8,7 +8,7 @@ node_version="$3"
 os_string="$4"
 
 # make os-release one line and get rid of the garbage that confuses github actions
-details=$(tr -d '()' < /etc/os-release | tr '\n' ',' | sed 's/ANSI_COLOR="0;31",//')
+details=$(tr -d '()' < /etc/os-release | tr '\n' ',' | sed 's/ANSI_COLOR="0;3.",//')
 echo "::set-output name=os-details::$details"
 
 # if node isn't installed them nvm should be (handled by <os>.Dockerfile)
