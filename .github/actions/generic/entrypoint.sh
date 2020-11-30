@@ -58,8 +58,9 @@ case "$os_string" in
   alpine*) os=alpine ;;
   stretch*|buster*) os=debian ;;
   centos*) os=centos ;;
+  amazonlinux*) os=amazonlinux ;;
   # if nothing matches then this script needs to be updated
-  *) exit 1 ;;
+  *) echo "unknown operating system $os_string" && exit 1 ;;
 esac
 
 #echo "base: $base"
