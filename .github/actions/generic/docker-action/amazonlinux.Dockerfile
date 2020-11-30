@@ -27,6 +27,7 @@ RUN yum -y install \
   make \
   git \
   curl \
+  tar \
   nano
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.1/install.sh | bash
