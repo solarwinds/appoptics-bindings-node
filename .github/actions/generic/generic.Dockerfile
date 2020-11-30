@@ -1,5 +1,5 @@
-# this container just builds another container because it's not possible to
-# dynamically specify a docker file or an image in github actions.
+# this container runs 'entrypoint.sh' to build another container, because it's
+# not possible to dynamically specify a docker file or an image in github actions.
 FROM alpine:latest
 
 # Copy the docker files that we'll build.
