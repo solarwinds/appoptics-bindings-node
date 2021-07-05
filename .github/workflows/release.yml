@@ -51,9 +51,12 @@ jobs:
           ${{ secrets.PROD_AWS_ACCESS_KEY_ID }} \
           ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
 
-      # must install specific dependency for liboboe.js before a build
-      - name: NPM Install linux-os-info
-        run: docker exec ${{ steps.create.outputs.containerId }} npm install --save linux-os-info
+      # must install specific dependencies before a build
+      # can't call npm install. doing so may fallback-to-build if package has yet to be published (double build)
+      # use npm workaround specifying a package name to bypass install script in package.json
+      - name: NPM Install dependencies
+        run: docker exec ${{ steps.create.outputs.containerId }} npm install linux-os-info --unsafe-perm
+
 
       # runs: node setup-liboboe.js && node-pre-gyp install --build-from-source
       - name: NPM Install with Rebuild from source
