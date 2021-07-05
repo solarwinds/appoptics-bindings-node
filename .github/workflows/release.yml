@@ -132,7 +132,7 @@ jobs:
     needs: target-group-install
 
     env:
-      AO_TOKEN_PROD: ${{ secrets.AO_TOKEN_PROD }}
+      NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
     steps:
       - name: Checkout ${{ github.ref }}
@@ -142,10 +142,10 @@ jobs:
         id: create
         run: .github/scripts/container-from-matrix-input.sh node
 
-      # the file is created in the container. it should be cleared when the container is "garbage collected" by GitHub
+      # the file is created in the container. It does not contain the token - only a ref to an environment variable.
       - name: Set NPM Token
         run: |
-          docker exec ${{ steps.create.outputs.containerId }} bash -c "echo '//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}' >> .npmrc"
+          docker exec ${{ steps.create.outputs.containerId }} bash -c "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc"
           docker exec ${{ steps.create.outputs.containerId }} bash -c "echo 'registry=https://registry.npmjs.org/' >> .npmrc"
           docker exec ${{ steps.create.outputs.containerId }} bash -c "echo 'always-auth=true '>> .npmrc"
 
