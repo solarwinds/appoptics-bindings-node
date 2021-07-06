@@ -46,14 +46,15 @@ jobs:
       - name: NPM Install dependencies
         run: docker exec ${{ steps.create.outputs.containerId }} npm install linux-os-info --unsafe-perm
 
-
       # runs: node setup-liboboe.js && node-pre-gyp install --build-from-source
       - name: NPM Install with Rebuild from source
         run: docker exec ${{ steps.create.outputs.containerId }} npm run rebuild
 
-
-      - name: Show Artifacts
-        run: docker exec ${{ steps.create.outputs.containerId }} ls -R -al ./dist
+      # explicitly look for artifacts that where created during install
+      - name: Confirm Build Artifacts
+        run: |
+          docker exec ${{ steps.create.outputs.containerId }} ls ./dist/napi-v7/ao_metrics.node 
+          docker exec ${{ steps.create.outputs.containerId }} ls ./dist/napi-v7/apm_bindings.node
 
       - name: Run tests
         run: docker exec ${{ steps.create.outputs.containerId }} npm test

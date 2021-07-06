@@ -34,9 +34,6 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.load-build-group.outputs.matrix)}}
 
-    env:
-      AO_TOKEN_PROD: ${{ secrets.AO_TOKEN_PROD }}
-
     steps:
       - name: Checkout ${{ github.ref }}
         uses: actions/checkout@v2
@@ -57,14 +54,13 @@ jobs:
       - name: NPM Install dependencies
         run: docker exec ${{ steps.create.outputs.containerId }} npm install linux-os-info --unsafe-perm
 
-
-      # runs: node setup-liboboe.js && node-pre-gyp install --build-from-source
-      - name: NPM Install with Rebuild from source
-        run: docker exec ${{ steps.create.outputs.containerId }} npm run rebuild
-
-      # node-pre-gyp direct rebuild
+      # must setup libobo before build
+      # node-pre-gyp rebuild runs "clean" and "build" at once.
+      # it is mapped to `node-gyp rebuild` which internally means "clean + configure + build" and triggers a full recompile
       - name: Build
-        run: docker exec ${{ steps.create.outputs.containerId }} npx node-pre-gyp rebuild
+        run: |
+          docker exec ${{ steps.create.outputs.containerId }} node setup-liboboe.js
+          docker exec ${{ steps.create.outputs.containerId }} npx node-pre-gyp rebuild
 
       # artifacts are at:build/stage/nodejs/bindings/
       - name: Package
@@ -117,8 +113,11 @@ jobs:
       - name: NPM Install Production
         run: docker exec ${{ steps.create.outputs.containerId }} npm install --unsafe-perm --s3_host=production
 
-      # - name: Run tests
-      #   run: docker exec ${{ steps.create.outputs.containerId }} npm test TODO: make decision on this
+      # explicitly look for artifacts that where created during install
+      - name: Confirm Install Artifacts
+        run: |
+          docker exec ${{ steps.create.outputs.containerId }} ls ./dist/napi-v7/ao_metrics.node 
+          docker exec ${{ steps.create.outputs.containerId }} ls ./dist/napi-v7/apm_bindings.node
 
       - name: Stop & Remove container
         if: always()
